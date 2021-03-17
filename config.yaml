@@ -1,0 +1,10 @@
+# Subjects considered in analysis
+subject_ids:
+  - "001"
+  - "002"
+  - "003"
+
+# Band-pass filter limits
+filter:
+  fmin: 0.6  # bandpass min frequency in Hz
+  fmax: 50  # bandpass max frequency in Hz
