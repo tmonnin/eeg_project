@@ -34,6 +34,7 @@ class Base:
             print(f"Load raw object because file not exists: {self.filename}")
             os.makedirs(fname.reports_dir, exist_ok=True)
             os.makedirs(fname.subject_dir(subject=self.subject), exist_ok=True)
+            os.makedirs(fname.annotations_dir, exist_ok=True)
             self.raw = utils.load_data(task=self.task, subject_id=self.subject)
         else:
             self.raw = mne.io.read_raw_fif(self.prev.get_filename(self.subject), preload=False)

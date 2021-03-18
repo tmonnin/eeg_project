@@ -1,5 +1,7 @@
+import os
 import mne
 from autoreject import AutoReject
+from config import fname
 from base import Base
 from _01_clean_channels import CleanChannels
 
@@ -13,13 +15,13 @@ class CleanSegments(Base):
         epochs_none = self.get_epochs_none()
         epochs_manual = self.get_epochs_manual()
         epochs_thresh = self.get_epochs_thresh()
-        epochs_ar = self.get_epochs_autoreject()
+        #epochs_ar = self.get_epochs_autoreject()
         # Compare different rejection techniques
         figure_compare_evoked = mne.viz.plot_compare_evokeds({
             'raw': epochs_none.average(),
             'manual': epochs_manual.average(),
             'thresh': epochs_thresh.average(),
-            'ar': epochs_ar.average()
+            #'ar': epochs_ar.average()
             }, picks="Cz", show=False)
         self.add_figure(figure=figure_compare_evoked, caption="Diagram of different approaches for cleaning segments", section="Preprocessing")
 
@@ -28,16 +30,17 @@ class CleanSegments(Base):
         return epochs
 
     def get_epochs_manual(self):
+        path_annotations = os.path.join(fname.annotations_dir, f"sub-{self.subject}_task-{self.task}_badannotations_.txt")
         select_bad_interactive = False
         if select_bad_interactive:
             # Open interactive tool to select bad segments
             self.raw.plot(n_channels=len(self.raw.ch_names), show=True)#,scalings =40e-6)
             #plt.show()
             bad_ix = [i for i,a in enumerate(self.raw.annotations) if a['description']=="BAD_"]
-            self.raw.annotations[bad_ix].save(f"sub-{self.subject}_task-{self.task}_badannotations.txt")
+            self.raw.annotations[bad_ix].save(path_annotations)
         #https://mne.tools/dev/generated/mne.read_annotations.html
         #The annotations stored in a .csv require the onset columns to be timestamps. If you have onsets as floats (in seconds), you should use the .txt extension.
-        annotations = mne.read_annotations(f"sub-{self.subject}_task-{self.task}_badannotations_.txt")
+        annotations = mne.read_annotations(path_annotations)
         assert annotations.onset.all() != 0.0  # Very important check to uncover the latent bug of mne.read_annotations()
         assert annotations.duration.all() != 0.0
         #assert annotations.description.all() == 'BAD_'
