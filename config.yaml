@@ -29,6 +29,7 @@ cleansegments:
   #strategy: "thresh"
   #strategy: "autoreject"
 
-ica: {}
+ica:
+  fmin: 2.0  # lowpass min frequency in Hz
 
 reference: {}

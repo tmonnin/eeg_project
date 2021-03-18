@@ -11,7 +11,8 @@ class Reference(Base):
     def process(self):
         # https://mne.tools/stable/generated/mne.set_eeg_reference.html
         # Literature suggests "Average" as new reference for N170 task 
-        # TODO cite source
+        # https://www.sciencedirect.com/science/article/pii/S1053811920309502
+        # "For analysis of the N170, the EEG signals were referenced to the average of all 33 sites (because the average reference is standard in the N170 literature)."
         self.raw.load_data()
         mne.set_eeg_reference(self.raw, ref_channels='average', copy=False, projection=False, ch_type='auto', forward=None, verbose=None)
         figure_after_reference = self.raw.plot(n_channels=len(self.raw.ch_names), show=False)#,scalings =40e-6)

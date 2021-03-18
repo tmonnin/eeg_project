@@ -10,11 +10,13 @@ from _00_filter import Filter
 from _01_clean_channels import CleanChannels
 from _02_clean_segments import CleanSegments
 from _03_ica import ICA
+from _04_reference import Reference
 
 steps = (Filter,
          CleanChannels,
          CleanSegments,
-         ICA
+         ICA,
+         Reference
         )
 
 for step in steps:

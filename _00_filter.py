@@ -5,6 +5,8 @@ class Filter(Base):
 # https://mne.tools/stable/auto_tutorials/discussions/plot_background_filtering.html#defaults-in-mne-python
 # Low-pass filter at 0.6Hz for slow drifts
 # High-pass filter at 50Hz for line noise
+# Section "Removing power-line noise with low-pass filtering" in:
+# https://mne.tools/0.15/auto_tutorials/plot_artifacts_correction_filtering.html
     def __init__(self):
         prev = None
         super().__init__(self.__class__.__name__.lower(), prev)
