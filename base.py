@@ -18,13 +18,16 @@ class Base:
 
     def run(self):
         for self.subject in self.subjects:
-            self.kwargs["subject"] = self.subject
-            self.filename = fname.__dict__[self.filebase](**self.kwargs)
-
+            self.get_filename(self.subject)
             self.load()
             self.process()
             self.save()
             self.report()
+
+    def get_filename(self, subject):
+        self.kwargs["subject"] = subject
+        self.filename = fname.__dict__[self.filebase](**self.kwargs)
+        return self.filename
 
     def load(self):
         if self.prev is None:
@@ -33,7 +36,7 @@ class Base:
             os.makedirs(fname.subject_dir(subject=self.subject), exist_ok=True)
             self.raw = utils.load_data(task='N170', subject_id=self.subject)
         else:
-            self.raw = mne.io.read_raw_fif(prev().filename, preload=False)
+            self.raw = mne.io.read_raw_fif(self.prev.get_filename(self.subject), preload=False)
 
     def process(self):
         raise NotImplementedError("Method process not implemented")
