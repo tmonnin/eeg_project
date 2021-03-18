@@ -12,6 +12,7 @@ class CleanSegments(Base):
         super().__init__(self.__class__.__name__.lower(), prev)
 
     def process(self):
+        # TODO Add to report: Epoching does baseline correction
         epochs_none = self.get_epochs_none()
         epochs_manual = self.get_epochs_manual()
         epochs_thresh = self.get_epochs_thresh()
