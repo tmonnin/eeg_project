@@ -38,6 +38,8 @@ class Base:
         else:
             self.raw = mne.io.read_raw_fif(self.prev.get_filename(self.subject), preload=False)
 
+        self.evts, self.evts_dict_stim = utils.load_annotations(self.raw)
+
     def process(self):
         raise NotImplementedError("Method process not implemented")
 
