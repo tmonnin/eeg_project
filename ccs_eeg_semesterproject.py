@@ -18,7 +18,7 @@ def _get_filepath(bids_root,subject_id,task):
 def load_precomputed_ica(bids_root,subject_id,task):
     # returns ICA and badComponents (starting at component = 0).
     # Note the existance of add_ica_info in case you want to plot something.
-    fn = _get_filepath(bids_root,subject_id,task)+'ica'
+    fn = _get_filepath(bids_root,subject_id,task)[1] +'ica'
 
     # import the eeglab ICA. I used eeglab because the "amica" ICA is a bit more powerful than runica
     ica = mne.preprocessing.read_ica_eeglab(fn+'.set')
@@ -48,7 +48,7 @@ def add_ica_info(raw,ica):
 def load_precomputed_badData(bids_root,subject_id,task):
     # return precomputed annotations and bad channels (first channel = 0)
 
-    fn = _get_filepath(bids_root,subject_id,task)
+    fn = _get_filepath(bids_root,subject_id,task)[1]
     print(fn)
 
     tmp = pd.read_csv(fn+'badSegments.csv')
