@@ -13,7 +13,7 @@ class Filter(Base):
         # Plot fourier space
         fourier_pre_filter = self.raw.plot_psd(area_mode='range', tmax=10.0, average=True,xscale="log", show=False)
         self.add_figure(figure=fourier_pre_filter, caption="Frequency diagram before filtering", section="Preprocessing")
-        self.raw.filter(self.kwargs["fmin"], self.kwargs["fmax"], fir_design='firwin')
+        self.raw.filter(self.config["fmin"], self.config["fmax"], fir_design='firwin')
         #FIR filter parameters
             #---------------------
             #Designing a one-pass, zero-phase, non-causal bandpass filter:

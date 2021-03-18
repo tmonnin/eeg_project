@@ -19,7 +19,7 @@ class CleanChannels(Base):
             # TODO spot bad channels in ICA
 
         else:
-            self.raw.info['bads'] = self.kwargs["bad_channels"]#['FP2']
+            self.raw.info['bads'] = self.config["bad_channels"]#['FP2']
             #picks = mne.pick_channels_regexp(raw.ch_names, regexp='MEG 2..3')
 
             # compare raw eeg and eeg without bad channels

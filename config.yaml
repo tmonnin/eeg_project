@@ -2,11 +2,14 @@
 # Global params
 ##################
 
+task: "N170"
+
 # Subjects considered in analysis
 subject_ids:
   - "001"
   #- "002"
   #- "003"
+
 
 ##################
 # Step-specific params

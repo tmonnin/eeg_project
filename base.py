@@ -12,8 +12,7 @@ class Base:
         mne.set_log_level('INFO')
         self.filebase = filebase
         self.prev = prev
-        self.task = "N170"
-        self.subjects, self.kwargs = self.load_config(self.filebase, path="config.yaml")
+        self.task, self.subjects, self.config = self.load_config(self.filebase, path="config.yaml")
         self.raw = None
         self.figures = []
 
@@ -26,8 +25,8 @@ class Base:
             self.report()
 
     def get_filename(self, subject):
-        self.kwargs["subject"] = subject
-        self.filename = fname.__dict__[self.filebase](**self.kwargs)
+        self.config["subject"] = subject
+        self.filename = fname.__dict__[self.filebase](**self.config)
         return self.filename
 
     def load(self):
@@ -81,6 +80,7 @@ class Base:
     def load_config(filename, path):
         with open(path) as f:
             config = yaml.safe_load(f)
+            task = config["task"]
             subjects = config["subject_ids"]
             kwargs = config[filename]
-        return subjects, kwargs
+        return task, subjects, kwargs

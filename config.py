@@ -20,6 +20,7 @@ fname.add('path', path)
 fname.add('archive_dir', '{path}/archive')
 fname.add('subjects_dir', '{path}/subjects')
 fname.add('subject_dir', '{subjects_dir}/{subject}')
+fname.add('annotations_dir', '{path}/annotations')
 
 # Filenames for data files
 fname.add('filter', '{subject_dir}/filter-{fmin}-{fmax}.fif')
