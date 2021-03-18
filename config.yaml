@@ -1,8 +1,16 @@
+##################
+# Global params
+##################
+
 # Subjects considered in analysis
 subject_ids:
   - "001"
-  - "002"
-  - "003"
+  #- "002"
+  #- "003"
+
+##################
+# Step-specific params
+##################
 
 # Band-pass filter limits
 filter:
@@ -11,3 +19,9 @@ filter:
 
 cleanchannels:
   bad_channels: []
+
+cleansegments:
+  #strategy: "none"
+  strategy: "manual"
+  #strategy: "thresh"
+  #strategy: "autoreject"

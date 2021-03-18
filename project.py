@@ -28,73 +28,8 @@ distractor = epochs[["stimulus:{}{}".format(k,j) for k in [1,2,3,4,5] for j in [
 
 ######### re-referencening
 
-
 ######### Data cleaning: Time, channel and subjects
-# Remove and interpolate bad channels
-select_bad_interactive = False
-if select_bad_interactive:
-    # Open interactive tool to select bad snippets
-    raw.plot(n_channels=len(raw.ch_names))#,scalings =40e-6)
-    plt.show()
-    bad_ix = [i for i,a in enumerate(raw.annotations) if a['description']=="BAD_"]
-    raw.annotations[bad_ix].save(f"sub-{subject_id}_task-{task}_badannotations.txt")
-else:
-    #https://mne.tools/dev/generated/mne.read_annotations.html
-    #The annotations stored in a .csv require the onset columns to be timestamps. If you have onsets as floats (in seconds), you should use the .txt extension.
-    annotations = mne.read_annotations(f"sub-{subject_id}_task-{task}_badannotations_.txt")
-    assert annotations.onset.all() != 0.0  # Very important check to uncover the latent bug of mne.read_annotations()
-    assert annotations.duration.all() != 0.0
-    #assert annotations.description.all() == 'BAD_'
-    raw.annotations.append(annotations.onset,annotations.duration,annotations.description)
-    raw.plot(n_channels=len(raw.ch_names))#,scalings =40e-6)
-    plt.show()
 
-# select bad channels
-# https://mne.tools/dev/auto_tutorials/preprocessing/plot_15_handling_bad_channels.html
-# visualize averaged epochs
-if True: #select_bad_interactive:
-    epochs.average().plot()
-# TODO spot bad channels in ICA
-#raw.info['bads'] = ['FP2']
-#picks = mne.pick_channels_regexp(raw.ch_names, regexp='MEG 2..3')
-#raw.plot(order=picks, n_channels=len(picks))
-
-# compare raw eeg and eeg without bad channels
-good_eeg = mne.pick_types(raw.info, meg=False, eeg=True)#, exclude='bads')
-all_eeg = mne.pick_types(raw.info, meg=False, eeg=True, exclude=[])
-print(np.setdiff1d(all_eeg, good_eeg))
-print(np.array(raw.ch_names)[np.setdiff1d(all_eeg, good_eeg)])
-
-# interpolate bad times and channels
-raw.set_montage('standard_1020',match_case=False)
-raw.interpolate_bads()
-
-# specify rejection criterion for a peak-to-peak rejection method
-
-# the choice of bad channels/times affects all subsequent steps in the analysis pipeline
-# hence, create new epochs object based on the annotations
-# get epochs with and without rejection
-epochs        = mne.Epochs(raw,evts,evts_dict_stim,tmin=-0.1,tmax=1,reject_by_annotation=False)
-epochs_manual = mne.Epochs(raw,evts,evts_dict_stim,tmin=-0.1,tmax=1,reject_by_annotation=True)
-reject_criteria = dict(eeg=200e-6,       # 100 µV # HAD TO INCREASE IT HERE, 100 was too harsh
-                       eog=200e-6)       # 200 µV
-epochs_thresh = mne.Epochs(raw,evts,evts_dict_stim,tmin=-0.1,tmax=1,reject=reject_criteria,reject_by_annotation=False)
-# Compare different rejection techniques
-#mne.viz.plot_compare_evokeds({'raw':epochs.average(),'clean':epochs_manual.average(),'thresh':epochs_thresh.average()},picks="Cz")
-
-# TODO auto reject
-from autoreject import AutoReject
-ar = AutoReject(verbose='tqdm')
-epochs.load_data()
-#epochs_ar = ar.fit_transform(epochs) 
-#r = ar.get_reject_log(epochs)
-#r.plot(orientation="horizontal")
-# TODO image epochs autoreject
-#mne.viz.plot_compare_evokeds({
-#    'raw':epochs.average(),
-#    'clean':epochs_manual.average(),
-#    'ar':epochs_ar.average()
-#    },picks="Cz")
 
 ###### ICA
 ica = mne.preprocessing.ICA(method="fastica")
