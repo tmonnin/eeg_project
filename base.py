@@ -12,6 +12,7 @@ class Base:
         mne.set_log_level('INFO')
         self.filebase = filebase
         self.prev = prev
+        self.task = "N170"
         self.subjects, self.kwargs = self.load_config(self.filebase, path="config.yaml")
         self.raw = None
         self.figures = []
@@ -34,7 +35,7 @@ class Base:
             print(f"Load raw object because file not exists: {self.filename}")
             os.makedirs(fname.reports_dir, exist_ok=True)
             os.makedirs(fname.subject_dir(subject=self.subject), exist_ok=True)
-            self.raw = utils.load_data(task='N170', subject_id=self.subject)
+            self.raw = utils.load_data(task=self.task, subject_id=self.subject)
         else:
             self.raw = mne.io.read_raw_fif(self.prev.get_filename(self.subject), preload=False)
 
