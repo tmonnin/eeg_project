@@ -26,8 +26,8 @@ fname.add('annotations_dir', '{path}/annotations')
 fname.add('filter', '{subject_dir}/filter-{fmin}-{fmax}.fif')
 fname.add('cleanchannels', '{subject_dir}/cleanchannels-{bad_channels}.fif')
 fname.add('cleansegments', '{subject_dir}/cleansegments-{strategy}.fif')
-fname.add('ica', '{subject_dir}/{subject}-ica.fif')
-fname.add('cleansegments', '{subject_dir}/cleansegments-{strategy}.fif')
+fname.add('ica', '{subject_dir}/ica.fif')
+fname.add('reference', '{subject_dir}/reference.fif')
 
 
 # Filenames for MNE reports
