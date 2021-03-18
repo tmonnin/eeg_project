@@ -6,6 +6,21 @@ import mne
 import numpy as np
 import utils
 
+from _00_filter import Filter
+from _01_clean_channels import CleanChannels
+from _02_clean_segments import CleanSegments
+from _03_ica import ICA
+
+steps = (Filter,
+         CleanChannels,
+         CleanSegments,
+         ICA
+        )
+
+for step in steps:
+    step().run()
+
+exit()
 
 # Dataset N170: A face-viewing experiments, with an effect of faces at 170ms
 raw = utils.load_data(task='N170', subject_id='001')
@@ -31,26 +46,7 @@ distractor = epochs[["stimulus:{}{}".format(k,j) for k in [1,2,3,4,5] for j in [
 ######### Data cleaning: Time, channel and subjects
 
 
-###### ICA
-ica = mne.preprocessing.ICA(method="fastica")
-ica.fit(raw,verbose=True)
-ica.plot_components(range(10))
-#ica.plot_properties(raw,picks=[0,1],psd_args={'fmax': 35.},reject=None)
-# Estimate sources given the unmixing matrix.
-#icaact = ica.get_sources(raw)
-#plt.plot(icaact[5,0:20000][0].T)
-#ica.plot_overlay(raw,exclude=[1,8,9])
 
-#### Use preprocessed data
-ica,badComps = load_precomputed_ica(filepath, subject_id)
-ica = add_ica_info(raw,ica)
-annotations,bad_ix = load_precomputed_badData(filepath, subject_id)
-reconst_raw = raw.copy()
-#Remove selected components from the signal.
-ica.apply(reconst_raw,exclude=badComps)
-raw.plot()
-reconst_raw.plot() 
-#ica.plot_overlay(raw,exclude=badComps)
 #bad_ix = [i for i,a in enumerate(annotations) if a['description']=="BAD_"]
 #raw.annotations[bad_ix].save("sub-{}_task-P3_badannotations.csv".format(subject_id))
 #annotations = mne.read_annotations("sub-{}_task-P3_badannotations.csv".format(subject_id))
