@@ -28,3 +28,7 @@ cleansegments:
   strategy: "manual"
   #strategy: "thresh"
   #strategy: "autoreject"
+
+ica: {}
+
+reference: {}

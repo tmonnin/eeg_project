@@ -27,6 +27,8 @@ fname.add('filter', '{subject_dir}/filter-{fmin}-{fmax}.fif')
 fname.add('cleanchannels', '{subject_dir}/cleanchannels-{bad_channels}.fif')
 fname.add('cleansegments', '{subject_dir}/cleansegments-{strategy}.fif')
 fname.add('ica', '{subject_dir}/{subject}-ica.fif')
+fname.add('cleansegments', '{subject_dir}/cleansegments-{strategy}.fif')
+
 
 # Filenames for MNE reports
 fname.add('reports_dir', '{path}/reports/')
