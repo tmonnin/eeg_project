@@ -57,9 +57,17 @@ def load_annotations(raw):
     #Used Annotations descriptions: ['response:201', 'response:202', 'stimulus:1', 'stimulus:10',
     wanted_keys = [e for e in evts_dict.keys() if not "response" in e]
     evts_dict_stim=dict((k, evts_dict[k]) for k in wanted_keys if k in evts_dict)
-    #print(sorted(evts_dict_stim.values())) 
+    #print(sorted(evts_dict_stim.values()))
     #[3, 4, 5, .., 161, 162] --> event_ids
     #{'stimulus:1': 3, 'stimulus:10': 4, 'stimulus:101': 5}
+    # Event Code Scheme
+    # https://osf.io/u8w69/
+    #Faces: 1-40
+    #Cars: 41-80
+    #Scrambled faces: 101-140
+    #Scrambled cars: 141-180
+    #Correct: 201
+    #Wrong: 202
     return evts, evts_dict_stim
 
 def load_bad_channels(task, subject_id):
