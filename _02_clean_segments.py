@@ -3,6 +3,7 @@ import mne
 from autoreject import AutoReject
 from config import fname
 from base import Base
+import utils
 from _01_clean_channels import CleanChannels
 
 class CleanSegments(Base):
@@ -31,20 +32,26 @@ class CleanSegments(Base):
         return epochs
 
     def get_epochs_manual(self):
-        path_annotations = os.path.join(fname.annotations_dir, f"sub-{self.subject}_task-{self.task}_badannotations_.txt")
-        select_bad_interactive = False
-        if select_bad_interactive:
-            # Open interactive tool to select bad segments
-            self.raw.plot(n_channels=len(self.raw.ch_names), show=True)#,scalings =40e-6)
-            #plt.show()
-            bad_ix = [i for i,a in enumerate(self.raw.annotations) if a['description']=="BAD_"]
-            self.raw.annotations[bad_ix].save(path_annotations)
-        #https://mne.tools/dev/generated/mne.read_annotations.html
-        #The annotations stored in a .csv require the onset columns to be timestamps. If you have onsets as floats (in seconds), you should use the .txt extension.
-        annotations = mne.read_annotations(path_annotations)
+        if self.subject in self.config["subjects_preprocess"]:
+            path_annotations = os.path.join(fname.annotations_dir, f"sub-{self.subject}_task-{self.task}_badannotations_.txt")
+            select_bad_interactive = False
+            if select_bad_interactive:
+                # Open interactive tool to select bad segments
+                self.raw.plot(n_channels=len(self.raw.ch_names), show=True)#,scalings =40e-6)
+                #plt.show()
+                bad_ix = [i for i,a in enumerate(self.raw.annotations) if a['description']=="BAD_"]
+                self.raw.annotations[bad_ix].save(path_annotations)
+            #https://mne.tools/dev/generated/mne.read_annotations.html
+            #The annotations stored in a .csv require the onset columns to be timestamps. If you have onsets as floats (in seconds), you should use the .txt extension.
+            annotations = mne.read_annotations(path_annotations)
+
+        else:
+            annotations = utils.load_bad_segments(task=self.task, subject_id=self.subject)
+
         assert annotations.onset.all() != 0.0  # Very important check to uncover the latent bug of mne.read_annotations()
         assert annotations.duration.all() != 0.0
-        #assert annotations.description.all() == 'BAD_'
+        assert all(description.startswith('BAD_') for description in annotations.description)
+        # This is the actual outcome of this step, in future steps raw.annotatons is used to generate an epoch object
         self.raw.annotations.append(annotations.onset,annotations.duration,annotations.description)
         epochs_manual = mne.Epochs(self.raw,self.evts,self.evts_dict_stim,tmin=-0.1,tmax=1,reject_by_annotation=True)
 

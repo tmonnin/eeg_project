@@ -15,18 +15,22 @@ dataset:
   wrong: [202]
 
 # Subjects considered in analysis
-subject_ids:
+subjects_analysis:
   - "001"
   #- "002"
   #- "003"
 
+subjects_preprocess: []
+  #- "001"
+  #- "002"
+  #- "003"
 
 ##################
 # Step-specific params
 ##################
 
-# Band-pass filter limits
 filter:
+  # Band-pass filter limits
   fmin: 0.6  # bandpass min frequency in Hz
   fmax: 50  # bandpass max frequency in Hz
 
@@ -41,5 +45,3 @@ cleansegments:
 
 ica:
   fmin: 2.0  # lowpass min frequency in Hz
-
-reference: {}
