@@ -42,6 +42,8 @@ class ICA(Base):
         #### Use preprocessed data
         ica, bad_comps = utils.load_ica(self.task, self.subject)
         ica = utils.ica_info(self.raw, ica)
+        # TODO check how preprocessed ICA matches my preprocessed raw object
+        # https://mne.tools/stable/generated/mne.preprocessing.ICA.html#mne.preprocessing.ICA.get_sources
         #Remove selected components from the signal.
         self.raw.load_data()
         # Apply bad ICA components on real raw object
