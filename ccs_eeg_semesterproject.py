@@ -56,7 +56,7 @@ def load_precomputed_badData(bids_root,subject_id,task):
     annotations = mne.Annotations(tmp.onset,tmp.duration,tmp.description)
     # Unfortunately MNE assumes that csv files are in milliseconds and only txt files in seconds.. wth?
     #annotations = mne.read_annotations(fn+'badSegments.csv')
-    badChannels = np.loadtxt(filepath+'badChannels.tsv',delimiter='\t')
+    badChannels = np.loadtxt(fn+'badChannels.tsv',delimiter='\t')
     badChannels = badChannels.astype(int)
     badChannels -= 1 # start counting at 0
 
