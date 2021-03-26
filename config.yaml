@@ -45,3 +45,5 @@ cleansegments:
 
 ica:
   fmin: 2.0  # lowpass min frequency in Hz
+
+reference: {}

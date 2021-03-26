@@ -12,12 +12,19 @@ class Base:
         mne.set_log_level('INFO')
         self.filebase = filebase
         self.prev = prev
-        self.task, self.subjects, self.config = self.load_config(self.filebase, path="config.yaml")
+        self.load_config(self.filebase, path="config.yaml")
         self.raw = None
         self.figures = []
 
+    def load_config(self, filename, path):
+        with open(path) as f:
+            self.config = yaml.safe_load(f)
+            # Add step-specific params to root of dict
+            self.config.update(self.config[filename])
+            self.task = self.config["task"]
+
     def run(self):
-        for self.subject in self.subjects:
+        for self.subject in self.config["subjects_analysis"]:
             self.get_filename(self.subject)
             self.load()
             self.process()
@@ -77,11 +84,10 @@ class Base:
             subject = "001"
         return subject
 
-    @staticmethod
-    def load_config(filename, path):
-        with open(path) as f:
-            config = yaml.safe_load(f)
-            task = config["task"]
-            subjects = config["subject_ids"]
-            kwargs = config[filename]
-        return task, subjects, kwargs
+    def get_epochs(self):
+        bad_segments_set = any(description.startswith('BAD_') for description in self.raw.annotations.description)
+        if not bad_segments_set:
+            raise Exception("Bad segments have not yet added to annotations!")
+        epochs = mne.Epochs(self.raw,self.evts,self.evts_dict_stim,tmin=-0.1,tmax=1,reject_by_annotation=True)
+
+        return epochs
