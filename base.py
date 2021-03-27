@@ -48,12 +48,12 @@ class Base:
         else:
             self.raw = mne.io.read_raw_fif(self.prev.get_filename(self.subject), preload=False)
 
-        evts, evts_dict = utils.load_annotations(self.raw)
-        events_dict_inv = {v: k for k, v in evts_dict.items()}
+        evts, evts_dict_all = utils.load_annotations(self.raw)
+        events_dict_inv = {v: k for k, v in evts_dict_all.items()}
         # Assert uniqueness of dict values to allow inversion
-        assert len(evts_dict) == len(events_dict_inv)
+        assert len(evts_dict_all) == len(events_dict_inv)
         code_response_wrong = self.config["dataset"]["response_wrong"][0]
-        evt_id_response_wrong = evts_dict[f"response:{code_response_wrong}"]
+        evt_id_response_wrong = evts_dict_all[f"response:{code_response_wrong}"]
         wrong_response_evts = []
         if evts[0][2] == evt_id_response_wrong:
             wrong_response_evts.append(0)
@@ -69,8 +69,11 @@ class Base:
                 wrong_response_evts.append(i+1)
         # Delete all events related to wrong response
         self.evts = np.delete(evts, wrong_response_evts, axis=0)
-        # Update evts_dict to remove unused events
-        self.evts_dict = dict((k,v) for k, v in evts_dict.items() if v in self.evts[:,2])
+        # Create evts_dict from evts_dict_all by removing unused events
+        self.evts_dict = dict((k,v) for k, v in evts_dict_all.items() if v in self.evts[:,2])
+        # Create evts_dict_stim including only stimulus events for epoching
+        wanted_keys = [e for e in self.evts_dict.keys() if not "response" in e]
+        self.evts_dict_stim = dict((k, self.evts_dict[k]) for k in wanted_keys if k in self.evts_dict)
         # Ensure that no event with wrong response remains
         assert self.evts[:,2].all() != evt_id_response_wrong
 
@@ -126,8 +129,8 @@ class Base:
             raise NotImplementedError(f"Condition {condition} not implemented")
 
         wanted_event_keys = [key for key in self.evts_dict.keys() if any(str(code) in key for code in wanted_codes)]
-        final_evts=dict((k, self.evts_dict[k]) for k in wanted_event_keys if k in self.evts_dict)
+        evt_dict_stim = dict((k, self.evts_dict[k]) for k in wanted_event_keys if k in self.evts_dict)
 
-        epochs = mne.Epochs(self.raw,self.evts,final_evts,tmin=-0.1,tmax=1,reject_by_annotation=True)
+        epochs = mne.Epochs(self.raw, self.evts, evt_dict_stim, tmin=-0.1, tmax=1, reject_by_annotation=True)
 
         return epochs
