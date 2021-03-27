@@ -51,6 +51,7 @@ class CleanSegments(Base):
         assert annotations.onset.all() != 0.0  # Very important check to uncover the latent bug of mne.read_annotations()
         assert annotations.duration.all() != 0.0
         assert all(description.startswith('BAD_') for description in annotations.description)
+        # TODO add to report that trials with wrong response are removed in base.load()
         # This is the actual outcome of this step, in future steps raw.annotatons is used to generate an epoch object
         self.raw.annotations.append(annotations.onset,annotations.duration,annotations.description)
         epochs_manual = mne.Epochs(self.raw,self.evts,self.evts_dict_stim,tmin=-0.1,tmax=1,reject_by_annotation=True)

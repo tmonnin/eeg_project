@@ -68,7 +68,7 @@ def load_annotations(raw):
     #Scrambled cars: 141-180
     #Correct: 201
     #Wrong: 202
-    return evts, evts_dict_stim
+    return evts, evts_dict
 
 def load_bad_channels(task, subject_id):
     bids_root = f"../local/bids_project/{task.lower()}"

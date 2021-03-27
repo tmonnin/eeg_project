@@ -1,5 +1,6 @@
 import argparse
 import os
+import numpy as np
 import yaml
 import mne
 import utils
@@ -46,7 +47,31 @@ class Base:
         else:
             self.raw = mne.io.read_raw_fif(self.prev.get_filename(self.subject), preload=False)
 
-        self.evts, self.evts_dict_stim = utils.load_annotations(self.raw)
+        evts, evts_dict = utils.load_annotations(self.raw)
+        events_dict_inv = {v: k for k, v in evts_dict.items()}
+        # Assert uniqueness of dict values to allow inversion
+        assert len(evts_dict) == len(events_dict_inv)
+        code_response_wrong = self.config["dataset"]["response_wrong"][0]
+        evt_id_response_wrong = evts_dict[f"response:{code_response_wrong}"]
+        wrong_response_evts = []
+        if evts[0][2] == evt_id_response_wrong:
+            wrong_response_evts.append(0)
+        # Check for all events if wrong response happened
+        for i in range(0, len(evts)-1):
+            if evts[i+1][2] == evt_id_response_wrong:
+                prev_evt_id = evts[i][2]
+                prev_evt_str = events_dict_inv[prev_evt_id]
+                if prev_evt_str.startswith("stimulus"):
+                    # Mark event with stimulus that caused wrong response
+                    wrong_response_evts.append(i)
+                # Mark event with wrong response
+                wrong_response_evts.append(i+1)
+        # Delete all events related to wrong response
+        self.evts = np.delete(evts, wrong_response_evts, axis=0)
+        # Update evts_dict to remove unused events
+        self.evts_dict = dict((k,v) for k, v in evts_dict.items() if v in self.evts[:,2])
+        # Ensure that no event with wrong response remains
+        assert self.evts[:,2].all() != evt_id_response_wrong
 
     def process(self):
         raise NotImplementedError("Method process not implemented")
@@ -84,10 +109,25 @@ class Base:
             subject = "001"
         return subject
 
-    def get_epochs(self):
+    def get_epochs(self, condition=None):
         bad_segments_set = any(description.startswith('BAD_') for description in self.raw.annotations.description)
         if not bad_segments_set:
             raise Exception("Bad segments have not yet added to annotations!")
-        epochs = mne.Epochs(self.raw,self.evts,self.evts_dict_stim,tmin=-0.1,tmax=1,reject_by_annotation=True)
+
+        if condition == "face":  # Face stimuli
+            wanted_codes = self.config["dataset"]["faces"]
+        elif condition == "car":  # Car stimuli
+            wanted_codes = self.config["dataset"]["cars"]
+        elif condition is None:  # Both stimuli
+            wanted_codes = self.config["dataset"]["faces"] + self.config["dataset"]["cars"]
+        else:
+            raise NotImplementedError(f"Condition {condition} not implemented")
+
+        wanted_codes = wanted_codes + self.config["dataset"]["response_correct"]
+
+        wanted_event_keys = [key for key in self.evts_dict.keys() if any(str(code) in key for code in wanted_codes)]
+        final_evts=dict((k, self.evts_dict[k]) for k in wanted_event_keys if k in self.evts_dict)
+
+        epochs = mne.Epochs(self.raw,self.evts,final_evts,tmin=-0.1,tmax=1,reject_by_annotation=True)
 
         return epochs
