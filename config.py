@@ -30,7 +30,7 @@ fname.add('cleansegments', '{subject_dir}/cleansegments-{strategy}.fif')
 fname.add('ica', '{subject_dir}/ica-{fmin}.fif')
 fname.add('reference', '{subject_dir}/reference.fif')
 fname.add('erppeakanalysis', '{subject_dir}/erppeakanalysis-{electrode}.fif')
-fname.add('erppeaks', '{results_dir}/erppeaks-{electrode}.json')
+fname.add('erppeaks', '{subject_dir}/erppeaks-{electrode}.json')
 
 
 # Filenames for MNE reports

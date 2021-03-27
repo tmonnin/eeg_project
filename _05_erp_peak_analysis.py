@@ -35,16 +35,12 @@ class ErpPeakAnalysis(Base):
         self.add_figure(figure=figure_face, caption="Face condition", section="Analyse")
         self.add_figure(figure=figure_car, caption="Car condition", section="Analyse")
 
-        try:
-            with open(fname.erppeaks(electrode=electrode), "r") as json_file:
-                peaks = json.load(json_file)
-        except FileNotFoundError:
-            peaks = {}
+        peaks = {}
         peaks[self.subject] = {"faces": {}, "cars": {}}
         peaks[self.subject]["faces"] = epochs_face.load_data().pick(electrode).average().get_peak(ch_type="eeg")
         peaks[self.subject]["cars"] = epochs_car.load_data().pick(electrode).average().get_peak(ch_type="eeg")
-        with open(fname.erppeaks(electrode=electrode), "w") as json_file:
-            json.dump(peaks, json_file)
+        with open(fname.erppeaks(subject=self.subject, electrode=electrode), "w") as json_file:
+            json.dump(peaks, json_file, indent=4)
 
 
 if __name__ == '__main__':
