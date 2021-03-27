@@ -25,8 +25,10 @@ class ErpPeakAnalysis(Base):
         for self.subject in self.config["subjects"]:
             #self.load()
             epoch = mne.read_epochs(fname.epochs(subject=self.subject))
-            epoch.equalize_event_counts(["faces", "cars"])
+            # Equalize the number of events per condition
+            # http://predictablynoisy.com/mne-python/generated/mne.Epochs.html#mne.Epochs.equalize_event_counts
             # Dropped 9 epochs: 40, 116, 161, 389, 393, 399, 403, 455, 468
+            epoch.equalize_event_counts(["faces", "cars"])
             evoked_faces = epoch["faces"].average()
             evoked_cars = epoch["cars"].average()
             evoked_faces_lst.append(evoked_faces)
@@ -35,7 +37,8 @@ class ErpPeakAnalysis(Base):
             #mne.viz.plot_compare_evokeds({"faces": evoked_faces, "cars": evoked_cars, "difference": evoked_difference}, picks=electrode, show=True)
             # Crop to relevant time frame between 150ms and 200ms as proposed in following tutorial:
             # https://mne.tools/dev/auto_tutorials/stats-sensor-space/plot_stats_cluster_1samp_test_time_frequency.html
-            evoked_difference_cropped = evoked_difference.crop(tmin=0.15, tmax=0.19)
+            evoked_difference_cropped = evoked_difference.crop(tmin=0.14, tmax=0.2)
+            # TODO use peak finder: https://mne.tools/dev/generated/mne.preprocessing.peak_finder.html
             # Extract peak amplitude on electrode PO8 with mne function
             # https://mne.tools/stable/generated/mne.EvokedArray.html#mne.EvokedArray.get_peak
             _, _, peak_difference = evoked_difference_cropped.pick(electrode).get_peak(return_amplitude=True)

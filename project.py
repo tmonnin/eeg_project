@@ -12,20 +12,24 @@ from _02_clean_segments import CleanSegments
 from _03_ica import ICA
 from _04_reference import Reference
 from _05_erp_peak_extraction import ErpPeakExtraction
+from _10_erp_peak_analysis import ErpPeakAnalysis
 
-steps = (Filter,
-        CleanChannels,
-        CleanSegments,
-        ICA,
-        Reference,
-        ErpPeakExtraction
-        )
+steps_subject = (Filter,
+                 CleanChannels,
+                 CleanSegments,
+                 ICA,
+                 Reference,
+                 ErpPeakExtraction,
+                )
+
+steps_global = (ErpPeakAnalysis,
+               )
 
 # Subjects considered in analysis
-subjects = ["001","002","003"]#,"004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030"]
+subjects = ["001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030"]
 
 def execute(subject_id):
-    for step in steps:
+    for step in steps_subject:
         step().run(subject_id)
 
 if __name__ == "__main__":
@@ -39,5 +43,7 @@ if __name__ == "__main__":
             process_handle = subprocess.Popen(["python", __file__, "--subject", subject])
             process_handles.append(process_handle)
         exit_codes = [p.wait() for p in process_handles]
+        for step in steps_global:
+            step().run()
     else:
         execute(subject)
