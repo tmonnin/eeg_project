@@ -33,6 +33,7 @@ class CleanSegments(Base):
 
     def get_epochs_manual(self):
         if self.subject in self.config["subjects_preprocess"]:
+            # Subject is one of the three ones that are cleaned manually
             path_annotations = os.path.join(fname.annotations_dir, f"sub-{self.subject}_task-{self.task}_badannotations_.txt")
             select_bad_interactive = False
             if select_bad_interactive:
@@ -46,6 +47,7 @@ class CleanSegments(Base):
             annotations = mne.read_annotations(path_annotations)
 
         else:
+            # Subject is not one of the manually cleaned ones, use precomputed data
             annotations = utils.load_bad_segments(task=self.task, subject_id=self.subject)
 
         assert annotations.onset.all() != 0.0  # Very important check to uncover the latent bug of mne.read_annotations()

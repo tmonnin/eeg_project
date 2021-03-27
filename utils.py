@@ -72,12 +72,12 @@ def load_annotations(raw):
 
 def load_bad_channels(task, subject_id):
     bids_root = f"../local/bids_project/{task.lower()}"
-    bad_segments, bad_channels = load_precomputed_badData(bids_root, subject_id, task)
+    _, bad_channels = load_precomputed_badData(bids_root, subject_id, task)
     return bad_channels
 
 def load_bad_segments(task, subject_id):
     bids_root = f"../local/bids_project/{task.lower()}"
-    bad_segments, bad_ix = load_precomputed_badData(bids_root, subject_id, task)
+    bad_segments, _ = load_precomputed_badData(bids_root, subject_id, task)
     return bad_segments
 
 def load_ica(task, subject_id):

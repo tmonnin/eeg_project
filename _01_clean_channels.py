@@ -1,5 +1,6 @@
 import mne
 from base import Base
+import utils
 from _00_filter import Filter
 
 class CleanChannels(Base):
@@ -18,29 +19,38 @@ class CleanChannels(Base):
             epochs.average().plot()
             # TODO spot bad channels in ICA
 
+        if self.subject in self.config["subjects_preprocess"]:
+            # Subject is one of the three ones that are cleaned manually
+            bad_channels = self.config["bad_channels"]
+
         else:
-            self.raw.info['bads'] = self.config["bad_channels"]#['FP2']
-            #picks = mne.pick_channels_regexp(raw.ch_names, regexp='MEG 2..3')
+            # Subject is not one of the manually cleaned ones, use precomputed data
+            bad_channels = utils.load_bad_channels(task=self.task, subject_id=self.subject)
 
-            # compare raw eeg and eeg without bad channels
-            all_eeg = mne.pick_types(self.raw.info, meg=False, eeg=True, exclude=[])
-            figure_all_channels = self.raw.plot(order=all_eeg, n_channels=len(all_eeg), show=False)
-            self.add_figure(figure=figure_all_channels, caption="Diagram with all channels", section="Preprocessing")
+        bad_channels = [self.raw.info.ch_names[idx] for idx in bad_channels]
+        self.raw.info['bads'].extend(bad_channels)
 
-            good_eeg = mne.pick_types(self.raw.info, meg=False, eeg=True)#, exclude='bads')
-            figure_good_channels = self.raw.plot(order=good_eeg, n_channels=len(good_eeg), show=False)
-            self.add_figure(figure=figure_good_channels, caption="Diagram with good channels", section="Preprocessing")
+        #picks = mne.pick_channels_regexp(raw.ch_names, regexp='MEG 2..3')
 
-            #print(np.setdiff1d(all_eeg, good_eeg))
-            #print(np.array(raw.ch_names)[np.setdiff1d(all_eeg, good_eeg)])
+        # compare raw eeg and eeg without bad channels
+        all_eeg = mne.pick_types(self.raw.info, meg=False, eeg=True, exclude=[])
+        figure_all_channels = self.raw.plot(order=all_eeg, n_channels=len(all_eeg), show=False)
+        self.add_figure(figure=figure_all_channels, caption="Diagram with all channels", section="Preprocessing")
 
-            # interpolate bad times and channels
-            self.raw.set_montage('standard_1020',match_case=False)
-            self.raw.load_data()  # required for interpolation command
-            self.raw.interpolate_bads()
+        good_eeg = mne.pick_types(self.raw.info, meg=False, eeg=True)#, exclude='bads')
+        figure_good_channels = self.raw.plot(order=good_eeg, n_channels=len(good_eeg), show=False)
+        self.add_figure(figure=figure_good_channels, caption="Diagram with good channels", section="Preprocessing")
 
-            figure_interpolated_bads = self.raw.plot(n_channels=len(self.raw.ch_names), show=False)#,scalings =40e-6)
-            self.add_figure(figure=figure_interpolated_bads, caption="Diagram after interpolating bad channels", section="Preprocessing")
+        #print(np.setdiff1d(all_eeg, good_eeg))
+        #print(np.array(raw.ch_names)[np.setdiff1d(all_eeg, good_eeg)])
+
+        # interpolate bad times and channels
+        self.raw.set_montage('standard_1020',match_case=False)
+        self.raw.load_data()  # required for interpolation command
+        self.raw.interpolate_bads()
+
+        figure_interpolated_bads = self.raw.plot(n_channels=len(self.raw.ch_names), show=False)#,scalings =40e-6)
+        self.add_figure(figure=figure_interpolated_bads, caption="Diagram after interpolating bad channels", section="Preprocessing")
 
 
 if __name__ == '__main__':
