@@ -36,9 +36,9 @@ class ErpPeakAnalysis(Base):
         self.add_figure(figure=figure_car, caption="Car condition", section="Analyse")
 
         peaks = {}
-        peaks[self.subject] = {"faces": {}, "cars": {}}
-        peaks[self.subject]["faces"] = epochs_face.load_data().pick(electrode).average().get_peak(ch_type="eeg")
-        peaks[self.subject]["cars"] = epochs_car.load_data().pick(electrode).average().get_peak(ch_type="eeg")
+        peaks = {"faces": {}, "cars": {}}
+        peaks["faces"] = epochs_face.load_data().pick(electrode).average().get_peak(ch_type="eeg")
+        peaks["cars"] = epochs_car.load_data().pick(electrode).average().get_peak(ch_type="eeg")
         with open(fname.erppeaks(subject=self.subject, electrode=electrode), "w") as json_file:
             json.dump(peaks, json_file, indent=4)
 
