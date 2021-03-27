@@ -28,6 +28,7 @@ fname.add('cleanchannels', '{subject_dir}/cleanchannels-{bad_channels}.fif')
 fname.add('cleansegments', '{subject_dir}/cleansegments-{strategy}.fif')
 fname.add('ica', '{subject_dir}/ica-{fmin}.fif')
 fname.add('reference', '{subject_dir}/reference.fif')
+fname.add('erppeakanalysis', '{subject_dir}/erppeakanalysis.fif')
 
 
 # Filenames for MNE reports
