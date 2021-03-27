@@ -101,24 +101,18 @@ class Base:
     def add_figure(self, figure, caption, section):
         self.figures.append((figure, caption, section))
 
-    def get_epochs(self, condition=None):
+    def get_epochs(self):
         # Epoching requires to have bad segments set
         bad_segments_set = any(description.startswith('BAD_') for description in self.raw.annotations.description)
         if not bad_segments_set:
             raise Exception("Bad segments have not yet added to annotations!")
 
-        if condition == "face":  # Face stimulus
-            wanted_codes = self.config["dataset"]["faces"]
-        elif condition == "car":  # Car stimulus
-            wanted_codes = self.config["dataset"]["cars"]
-        elif condition is None:  # Both stimuli
-            wanted_codes = self.config["dataset"]["faces"] + self.config["dataset"]["cars"]
-        else:
-            raise NotImplementedError(f"Condition {condition} not implemented")
-
-        wanted_event_keys = [key for key in self.evts_dict.keys() if any(str(code) in key for code in wanted_codes)]
-        evt_dict_stim = dict((k, self.evts_dict[k]) for k in wanted_event_keys if k in self.evts_dict)
-
-        epochs = mne.Epochs(self.raw, self.evts, evt_dict_stim, tmin=-0.1, tmax=1, reject_by_annotation=True)
-
-        return epochs
+        event_coding = self.config["dataset"]
+        evts_dict_categorized = {}
+        for condition_name, wanted_codes in event_coding.items():
+            for key, evt_code in self.evts_dict.items():
+                for code in wanted_codes:
+                    if(str(code) == key.split(":")[1]):
+                        evts_dict_categorized[f"{condition_name}/{code}"] = evt_code
+        epochs = mne.Epochs(self.raw, self.evts, event_id=evts_dict_categorized, tmin=-0.1, tmax=1, reject_by_annotation=True)
+        return epochs, evts_dict_categorized
