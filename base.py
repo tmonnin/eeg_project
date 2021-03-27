@@ -110,20 +110,19 @@ class Base:
         return subject
 
     def get_epochs(self, condition=None):
+        # Epoching requires to have bad segments set
         bad_segments_set = any(description.startswith('BAD_') for description in self.raw.annotations.description)
         if not bad_segments_set:
             raise Exception("Bad segments have not yet added to annotations!")
 
-        if condition == "face":  # Face stimuli
+        if condition == "face":  # Face stimulus
             wanted_codes = self.config["dataset"]["faces"]
-        elif condition == "car":  # Car stimuli
+        elif condition == "car":  # Car stimulus
             wanted_codes = self.config["dataset"]["cars"]
         elif condition is None:  # Both stimuli
             wanted_codes = self.config["dataset"]["faces"] + self.config["dataset"]["cars"]
         else:
             raise NotImplementedError(f"Condition {condition} not implemented")
-
-        wanted_codes = wanted_codes + self.config["dataset"]["response_correct"]
 
         wanted_event_keys = [key for key in self.evts_dict.keys() if any(str(code) in key for code in wanted_codes)]
         final_evts=dict((k, self.evts_dict[k]) for k in wanted_event_keys if k in self.evts_dict)
