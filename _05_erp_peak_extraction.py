@@ -4,7 +4,7 @@ from config import fname
 from base import Base
 from _04_reference import Reference
 
-class ErpPeakAnalysis(Base):
+class ErpPeakExtraction(Base):
 
     def __init__(self):
         prev = Reference()
@@ -44,4 +44,4 @@ class ErpPeakAnalysis(Base):
 
 
 if __name__ == '__main__':
-    ErpPeakAnalysis().run()
+    ErpPeakExtraction().run()

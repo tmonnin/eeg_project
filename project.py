@@ -11,14 +11,14 @@ from _01_clean_channels import CleanChannels
 from _02_clean_segments import CleanSegments
 from _03_ica import ICA
 from _04_reference import Reference
-from _05_erp_peak_analysis import ErpPeakAnalysis
+from _05_erp_peak_extraction import ErpPeakExtraction
 
 steps = (Filter,
         CleanChannels,
         CleanSegments,
         ICA,
         Reference,
-        ErpPeakAnalysis
+        ErpPeakExtraction
         )
 
 # Subjects considered in analysis
