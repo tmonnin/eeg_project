@@ -24,13 +24,13 @@ class Base:
             self.config.update(self.config[filename])
             self.task = self.config["task"]
 
-    def run(self):
-        for self.subject in self.config["subjects_analysis"]:
-            self.get_filename(self.subject)
-            self.load()
-            self.process()
-            self.save()
-            self.report()
+    def run(self, subject_id="001"):
+        self.subject = subject_id
+        self.get_filename(subject_id)
+        self.load()
+        self.process()
+        self.save()
+        self.report()
 
     def get_filename(self, subject):
         self.config["subject"] = subject
@@ -100,18 +100,6 @@ class Base:
 
     def add_figure(self, figure, caption, section):
         self.figures.append((figure, caption, section))
-
-    @staticmethod
-    def parse_args():
-        # Handle command line arguments
-        parser = argparse.ArgumentParser(description=__doc__)
-        parser.add_argument('subject', metavar='sub###', help='The subject to process')
-        try:
-            args = parser.parse_args()
-            subject = args.subject
-        except SystemExit:
-            subject = "001"
-        return subject
 
     def get_epochs(self, condition=None):
         # Epoching requires to have bad segments set

@@ -14,16 +14,7 @@ dataset:
   response_correct: [201]
   response_wrong: [202]
 
-# Subjects considered in analysis
-subjects_analysis:
-  - "001"
-  #- "002"
-  #- "003"
-
-subjects_preprocess: []
-  #- "001"
-  #- "002"
-  #- "003"
+subjects_preprocess: [] #"001","002","003"]
 
 ##################
 # Step-specific params
