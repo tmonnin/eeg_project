@@ -26,7 +26,9 @@ class CleanChannels(Base):
         else:
             # Subject is not one of the manually cleaned ones, use precomputed data
             bad_channels = utils.load_bad_channels(task=self.task, subject_id=self.subject)
-
+            if bad_channels is not None:
+                if bad_channels.ndim == 0:  # catch 0 dimensional arrays and handle them with direct access
+                    bad_channels = [bad_channels]
         bad_channels = [self.raw.info.ch_names[idx] for idx in bad_channels]
         self.raw.info['bads'].extend(bad_channels)
 
