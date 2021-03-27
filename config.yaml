@@ -48,4 +48,5 @@ ica:
 
 reference: {}
 
-erppeakanalysis: {}
+erppeakanalysis:
+  electrode: "PO8"

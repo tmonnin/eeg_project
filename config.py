@@ -15,12 +15,13 @@ path = os.path.dirname(os.path.abspath(__file__))
 
 fname = FileNames()
 
-# Filenames for diretories
+# Filenames for directories
 fname.add('path', path)
 fname.add('archive_dir', '{path}/archive')
 fname.add('subjects_dir', '{path}/subjects')
 fname.add('subject_dir', '{subjects_dir}/{subject}')
 fname.add('annotations_dir', '{path}/annotations')
+fname.add('results_dir', '{path}/results')
 
 # Filenames for data files
 fname.add('filter', '{subject_dir}/filter-{fmin}-{fmax}.fif')
@@ -28,7 +29,8 @@ fname.add('cleanchannels', '{subject_dir}/cleanchannels-{bad_channels}.fif')
 fname.add('cleansegments', '{subject_dir}/cleansegments-{strategy}.fif')
 fname.add('ica', '{subject_dir}/ica-{fmin}.fif')
 fname.add('reference', '{subject_dir}/reference.fif')
-fname.add('erppeakanalysis', '{subject_dir}/erppeakanalysis.fif')
+fname.add('erppeakanalysis', '{subject_dir}/erppeakanalysis-{electrode}.fif')
+fname.add('erppeaks', '{results_dir}/erppeaks-{electrode}.json')
 
 
 # Filenames for MNE reports
