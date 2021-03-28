@@ -46,8 +46,13 @@ reference: {}
 erppeakextraction:
   electrode: "PO8"
 
+decodingpeakextraction:
+  electrode: "PO8"
+
 erppeakanalysis:
   electrode: "PO8"
 
-decodinganalysis:
-  electrode: "PO8"
+decodingpeakanalysis:
+  t_start: 0.0
+  t_end: 1.0
+  t_sampling: 0.01

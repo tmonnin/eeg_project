@@ -32,6 +32,8 @@ fname.add('reference', '{subject_dir}/reference.fif')
 fname.add('erppeakextraction', '{subject_dir}/erppeakextraction-{electrode}.fif')
 fname.add('epochs', '{subject_dir}/epochs.fif')
 fname.add('erppeaks', '{results_dir}/erppeaks-{electrode}.json')
+fname.add('decodingpeakextraction', '{subject_dir}/decodingpeakextraction.fif')
+fname.add('decodingpeak', '{subject_dir}/decodingpeak.json')
 
 # Filenames for MNE reports
 fname.add('reports_dir', '{path}/reports/')
