@@ -114,5 +114,5 @@ class Base:
                 for code in wanted_codes:
                     if(str(code) == key.split(":")[1]):
                         evts_dict_categorized[f"{condition_name}/{code}"] = evt_code
-        epochs = mne.Epochs(self.raw, self.evts, event_id=evts_dict_categorized, tmin=-0.1, tmax=0.6, reject_by_annotation=True)
+        epochs = mne.Epochs(self.raw, self.evts, event_id=evts_dict_categorized, tmin=-0.1, tmax=1.0, reject_by_annotation=True)
         return epochs, evts_dict_categorized
