@@ -13,6 +13,7 @@ class ICA(Base):
         # TODO compare pre and post removing bad components with ICA
         figure_pre_ica = self.raw.plot(show=False)
         #self.add_figure(figure=figure_pre_ica, caption="Before applying ICA", section="Preprocessing")
+        raw_pre_ica = self.raw.copy()
         raw_ica = self.raw.copy()
         raw_ica.load_data()
         # https://mne.tools/stable/generated/mne.preprocessing.ICA.html
@@ -42,17 +43,19 @@ class ICA(Base):
         #### Use preprocessed data
         ica, bad_comps = utils.load_ica(self.task, self.subject)
         ica = utils.ica_info(self.raw, ica)
+        #ica.plot_properties(self.raw)
         # TODO check how preprocessed ICA matches my preprocessed raw object
         # https://mne.tools/stable/generated/mne.preprocessing.ICA.html#mne.preprocessing.ICA.get_sources
         #Remove selected components from the signal.
         self.raw.load_data()
         # Apply bad ICA components on real raw object
-        ica.apply(self.raw, exclude=bad_comps)
+        # ica.apply() works in-place and returns the altered object, doing both here
+        self.raw = ica.apply(self.raw, exclude=bad_comps)
 
         figure_post_ica = self.raw.plot(show=False)
         #self.add_figure(figure=figure_post_ica, caption="After applying ICA", section="Preprocessing")
 
-        figure_ica_overlay = ica.plot_overlay(self.raw, exclude=bad_comps, show=False)
+        figure_ica_overlay = ica.plot_overlay(raw_pre_ica, exclude=bad_comps, show=False)
         self.add_figure(figure=figure_ica_overlay, caption="ICA Overlay", section="Preprocessing")
 
 
