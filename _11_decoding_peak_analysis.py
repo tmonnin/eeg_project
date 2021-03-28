@@ -1,6 +1,7 @@
 import json
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy
 import mne
 from config import fname
 from base import Base
@@ -32,18 +33,22 @@ class DecodingPeakAnalysis(Base):
             #peaks = np.array(peaks)
             data = np.array(data)
             #plt.hist(peaks[:,0])
-            plt.hist(data)
+            #plt.hist(data)
             #plt.show()
             #mean_peak_time = np.mean(peaks[:,0])
             # Non-parametric cluster-level paired t-test
             # The first dimension should correspond to the difference between paired samples (observations) in two conditions.
             # https://mne.tools/dev/generated/mne.stats.permutation_cluster_1samp_test.html
-            # TODO test is non-deterministic and stochastically distributed -> eval distribution parameters
             alpha = 0.05
-            t_values, clusters, cluster_p_values, h0 = mne.stats.permutation_cluster_1samp_test(data)
-            test_results.append([start_time, cluster_p_values[0]])
+            statistics, p_value = scipy.stats.ttest_1samp(data[:,0], 0.5, alternative='greater')
+            test_results.append([start_time, p_value])
+            # TODO effect size
         #word = "not "*(p_value >= alpha)
         #print(f"Difference of ERP peak between face and car condition is {word}significant with alpha={alpha} and p-value={p_value}.")
-        print(test_results)
+        #print(test_results)
+        test_results = np.array(test_results)
+        plt.plot(test_results[:,0], test_results[:,1])
+        plt.axhline(y=0.05, color='r', linestyle='-')
+        plt.show()
 if __name__ == '__main__':
     DecodingPeakAnalysis().run()
