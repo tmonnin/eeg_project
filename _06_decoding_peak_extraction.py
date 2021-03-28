@@ -1,4 +1,5 @@
 import itertools
+import json
 import numpy as np
 import scipy
 
@@ -17,50 +18,57 @@ from config import fname
 from base import Base
 from _05_erp_peak_extraction import ErpPeakExtraction
 
-class DecodingAnalysis(Base):
+class DecodingPeakExtraction(Base):
 
     def __init__(self):
         prev = ErpPeakExtraction()
         super().__init__(self.__class__.__name__.lower(), prev)
 
-    def run(self):
+    def process(self):
         # Decoding analysis Decode the main contrast of the experiment across time
         # RQ: When is information about the conditions in our data available?
         # https://mne.tools/stable/auto_tutorials/machine-learning/plot_sensors_decoding.html
         electrode = self.config["electrode"]
-        for self.subject in self.config["subjects"][39:40]:
-            epochs = mne.read_epochs(fname.epochs(subject=self.subject))
-            # Only consider epochs with faces or cars condition for classification
-            epochs = epochs[["faces", "cars"]]
-            #epochs = self.get_epochs_concat(self.config["subjects"])
-            # TODO figure out time window that excludes response
-            # TODO change to epochs_train
-            epochs = epochs.crop(tmin=0.0, tmax=0.6)
-            labels = self.get_labels(epochs)
-            # TODO check picks
-            #data = epochs.get_data(picks=["PO7", "PO8"]).mean(axis=2)
-            #plt.scatter(data[:,0],data[:,1],color=np.array(["red","green"])[labels])
+        epochs = mne.read_epochs(fname.epochs(subject=self.subject))
+        # Only consider epochs with faces or cars condition for classification
+        epochs = epochs[["faces", "cars"]]
+        #epochs = self.get_epochs_concat(self.config["subjects"])
+        # TODO figure out time window that excludes response
+        # TODO change to epochs_train
+        epochs = epochs.crop(tmin=-0.1, tmax=1.0)
+        labels = self.get_labels(epochs)
+        # TODO check picks
+        #data = epochs.get_data(picks=["PO7", "PO8"]).mean(axis=2)
+        #plt.scatter(data[:,0],data[:,1],color=np.array(["red","green"])[labels])
 
-            models = (("LDA", LinearDiscriminantAnalysis()),
-                      ("LogisticRegression", sklearn.linear_model.LogisticRegression(solver="lbfgs", max_iter=500)),
-                      ("SVM", sklearn.svm.LinearSVC()),
-            )
-            feature_space = (#("SPoC", mne.decoding.SPoC(n_components=2)), # PermissionError for temp file
-                             #("CSP", mne.decoding.CSP(n_components=2, norm_trace=False)), # PermissionError for temp file
-                             ("StandardScaler", sklearn.preprocessing.StandardScaler()),  # equals mne.decoding.Scaler(scalings='mean')
-                             ("Vectorizer", mne.decoding.Vectorizer()),
-            )
-            fig, axs = plt.subplots(len(models), len(feature_space), constrained_layout=True)
-            fig.suptitle("Decoding Analysis")
+        models = (("LDA", LinearDiscriminantAnalysis()),
+                    ("LogisticRegression", sklearn.linear_model.LogisticRegression(solver="lbfgs", max_iter=500)),
+                    ("SVM", sklearn.svm.LinearSVC()),
+        )
+        feature_space = (#("SPoC", mne.decoding.SPoC(n_components=2)), # PermissionError for temp file
+                            #("CSP", mne.decoding.CSP(n_components=2, norm_trace=False)), # PermissionError for temp file
+                            ("StandardScaler", sklearn.preprocessing.StandardScaler()),  # equals mne.decoding.Scaler(scalings='mean')
+                            ("Vectorizer", mne.decoding.Vectorizer()),
+        )
+        fig, axs = plt.subplots(len(models), len(feature_space), constrained_layout=True, figsize=(16, 10))
+        fig.suptitle("Decoding Analysis")
+        peaks = {}
+        for ax, ((model_name, model), (feature_space_name, feature_space)) in zip(axs.flatten(), itertools.product(models, feature_space)):
+            pipe_simple = sklearn.pipeline.Pipeline([('feature_space', feature_space), ('model', model)])
+            cv = sklearn.model_selection.StratifiedShuffleSplit(10, test_size=0.2, random_state=0)
+            timeDecode = mne.decoding.SlidingEstimator(pipe_simple, scoring='roc_auc', n_jobs=0, verbose=True)
+            scores = mne.decoding.cross_val_multiscore(timeDecode, epochs.get_data(), labels, cv=cv, n_jobs=0)
+            scores = scores.mean(axis=0).tolist()
+            times = epochs.times.tolist()
+            peak_time = times[np.argmax(scores)]
+            peak_score = np.max(scores)
+            peaks[f"{feature_space_name}-{model_name}"] = {"times": times, "scores": scores}
+            self.plot(ax, times, scores, model_name, feature_space_name, peak_time, peak_score)
 
-            for ax, ((model_name, model), (feature_space_name, feature_space)) in zip(axs.flatten(), itertools.product(models, feature_space)):
-                pipe_simple = sklearn.pipeline.Pipeline([('feature_space', feature_space), ('model', model)])
-                cv = sklearn.model_selection.StratifiedShuffleSplit(10, test_size=0.2, random_state=0)
-                timeDecode = mne.decoding.SlidingEstimator(pipe_simple, scoring='roc_auc', n_jobs=0, verbose=True)
-                scores = mne.decoding.cross_val_multiscore(timeDecode, epochs.get_data(), labels, cv=cv, n_jobs=0)
-                self.plot(ax, epochs, scores, model_name, feature_space_name)
+        self.add_figure(figure=fig, caption="Comparison of decoding techniques", section="Analysis")
 
-            plt.show()
+        with open(fname.decodingpeak(subject=self.subject), "w") as json_file:
+            json.dump(peaks, json_file, indent=4)
 
             #try:
             #    csp.fit_transform(epochs.get_data(), labels)
@@ -79,9 +87,10 @@ class DecodingAnalysis(Base):
             #    pass
 
     @staticmethod
-    def plot(ax, epochs, scores, model_name, feature_space_name):
+    def plot(ax, x, y, model_name, feature_space_name, peak_time, peak_score):
         ax.axhline(0.5, color="lightcoral", label="chance")  # Horizontal line indicating chance (50%)
-        ax.plot(epochs.copy().times,scores.mean(axis=0), label="score")
+        ax.plot(x, y, label="score")
+        ax.scatter(peak_time, peak_score, s=200, color='red', marker='x', linewidths=3)
         ax.set_xlabel("Time [s]")
         ax.set_ylabel("ROC_AUC")
         ax.set_xlim([0.0, 0.5])
@@ -119,4 +128,4 @@ class DecodingAnalysis(Base):
 
 
 if __name__ == '__main__':
-    DecodingAnalysis().run()
+    DecodingPeakExtraction().run()
