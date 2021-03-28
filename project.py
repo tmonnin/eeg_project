@@ -12,6 +12,7 @@ from _02_clean_segments import CleanSegments
 from _03_ica import ICA
 from _04_reference import Reference
 from _05_erp_peak_extraction import ErpPeakExtraction
+from _06_decoding_peak_extraction import DecodingPeakExtraction
 from _10_erp_peak_analysis import ErpPeakAnalysis
 
 steps_subject = (Filter,
@@ -20,6 +21,7 @@ steps_subject = (Filter,
                  ICA,
                  Reference,
                  ErpPeakExtraction,
+                 DecodingPeakExtraction,
                 )
 
 steps_global = (ErpPeakAnalysis,
@@ -27,6 +29,8 @@ steps_global = (ErpPeakAnalysis,
 
 # Subjects considered in analysis
 subjects = ["001","002","003","004","005","006","007","008","009","010","011","012","013","014","015","016","017","018","019","020","021","022","023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040"]
+
+jobs = 1
 
 def execute(subject_id):
     for step in steps_subject:
@@ -38,11 +42,12 @@ if __name__ == "__main__":
     parser.add_argument('--subject', metavar='###', help='The subject to process')
     subject = parser.parse_args().subject
     if subject is None:
-        process_handles = []
-        for subject in subjects:
-            process_handle = subprocess.Popen(["python", __file__, "--subject", subject])
-            process_handles.append(process_handle)
-        exit_codes = [p.wait() for p in process_handles]
+        for i in range(0, len(subjects), jobs):
+            process_handles = []
+            for subject in subjects[i:i+jobs]:
+                process_handle = subprocess.Popen(["python", __file__, "--subject", subject])
+                process_handles.append(process_handle)
+            exit_codes = [p.wait() for p in process_handles]
         for step in steps_global:
             step().run()
     else:
