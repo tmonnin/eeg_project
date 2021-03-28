@@ -24,7 +24,7 @@ class Base:
             self.config.update(self.config[filename])
             self.task = self.config["task"]
 
-    def run(self, subject_id="001"):
+    def run(self, subject_id="040"):
         self.subject = subject_id
         self.get_filename(subject_id)
         self.load()
