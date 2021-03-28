@@ -48,3 +48,6 @@ erppeakextraction:
 
 erppeakanalysis:
   electrode: "PO8"
+
+decodinganalysis:
+  electrode: "PO8"
