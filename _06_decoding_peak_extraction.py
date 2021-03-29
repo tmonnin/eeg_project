@@ -42,13 +42,13 @@ class DecodingPeakExtraction(Base):
         #plt.scatter(data[:,0],data[:,1],color=np.array(["red","green"])[labels])
 
         models = (("LDA", LinearDiscriminantAnalysis()),
-                    ("LogisticRegression", sklearn.linear_model.LogisticRegression(solver="lbfgs", max_iter=500)),
-                    ("SVM", sklearn.svm.LinearSVC()),
+                  ("LogisticRegression", sklearn.linear_model.LogisticRegression(solver="lbfgs", max_iter=500)),
+                  ("SVM", sklearn.svm.LinearSVC()),
         )
         feature_space = (#("SPoC", mne.decoding.SPoC(n_components=2)), # PermissionError for temp file
-                            #("CSP", mne.decoding.CSP(n_components=2, norm_trace=False)), # PermissionError for temp file
-                            ("StandardScaler", sklearn.preprocessing.StandardScaler()),  # equals mne.decoding.Scaler(scalings='mean')
-                            ("Vectorizer", mne.decoding.Vectorizer()),
+                         #("CSP", mne.decoding.CSP(n_components=2, norm_trace=False)), # PermissionError for temp file
+                         ("StandardScaler", sklearn.preprocessing.StandardScaler()),  # equals mne.decoding.Scaler(scalings='mean')
+                         ("Vectorizer", mne.decoding.Vectorizer()),
         )
         fig, axs = plt.subplots(len(models), len(feature_space), constrained_layout=True, figsize=(16, 10))
         fig.suptitle("Decoding Analysis")
