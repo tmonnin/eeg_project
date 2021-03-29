@@ -1,4 +1,5 @@
 import json
+import scipy
 import numpy as np
 import matplotlib.pyplot as plt
 import mne
@@ -37,7 +38,7 @@ class ErpPeakAnalysis(Base):
             #mne.viz.plot_compare_evokeds({"faces": evoked_faces, "cars": evoked_cars, "difference": evoked_difference}, picks=electrode, show=True)
             # Crop to relevant time frame between 150ms and 200ms as proposed in following tutorial:
             # https://mne.tools/dev/auto_tutorials/stats-sensor-space/plot_stats_cluster_1samp_test_time_frequency.html
-            evoked_difference_cropped = evoked_difference.crop(tmin=0.14, tmax=0.2)
+            evoked_difference_cropped = evoked_difference.crop(tmin=0.13, tmax=0.2)
             # TODO use peak finder: https://mne.tools/dev/generated/mne.preprocessing.peak_finder.html
             # Extract peak amplitude on electrode PO8 with mne function
             # https://mne.tools/stable/generated/mne.EvokedArray.html#mne.EvokedArray.get_peak
@@ -62,12 +63,10 @@ class ErpPeakAnalysis(Base):
         data = np.array(peak_lst)
         hist = plt.hist(data, bins=10)
         plt.show()
-        # Non-parametric cluster-level paired t-test
-        # The first dimension should correspond to the difference between paired samples (observations) in two conditions.
-        # https://mne.tools/dev/generated/mne.stats.permutation_cluster_1samp_test.html
         alpha = 0.05
-        t_values, clusters, cluster_p_values, h0 = mne.stats.permutation_cluster_1samp_test(data)
-        p_value = cluster_p_values[0]
+        # Non-parametric paired t-test
+        t_values, p_value = scipy.stats.ttest_1samp(data[:,0], 0.0, alternative="less")
+
         word = "not "*(p_value >= alpha)
         print(f"Difference of ERP peak between face and car condition is {word}significant with alpha={alpha} and p-value={p_value}.")
 
