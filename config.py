@@ -38,4 +38,6 @@ fname.add('decodingpeak', '{subject_dir}/decodingpeak.json')
 # Filenames for MNE reports
 fname.add('reports_dir', '{path}/reports/')
 fname.add('report', '{reports_dir}/{subject}-report.h5')
+fname.add('report_analysis', '{reports_dir}/analysis-report.h5')
 fname.add('report_html', '{reports_dir}/{subject}-report.html')
+fname.add('report_analysis_html', '{reports_dir}/analysis-report.html')

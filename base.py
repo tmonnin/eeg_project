@@ -83,11 +83,17 @@ class Base:
     def save(self):
         self.raw.save(self.filename, overwrite=True)
 
-    def report(self):
+    def report(self, analysis=False):
         if not self.figures:
             raise Exception("Figures are not set")
         # Append PDF plots to report
-        with mne.open_report(fname.report(subject=self.subject)) as report:
+        if analysis:
+            report_path = fname.report_analysis
+            report_html_path = fname.report_analysis_html
+        else:
+            report_path = fname.report(subject=self.subject)
+            report_html_path = fname.report_html(subject=self.subject)
+        with mne.open_report(report_path) as report:
             for f in self.figures:
                 report.add_figs_to_section(
                     f[0],
@@ -95,7 +101,7 @@ class Base:
                     section=f[2],
                     replace=True
                 )
-            report.save(fname.report_html(subject=self.subject), overwrite=True,
+            report.save(report_html_path, overwrite=True,
                         open_browser=False)
 
     def add_figure(self, figure, caption, section):

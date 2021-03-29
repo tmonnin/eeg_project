@@ -47,6 +47,7 @@ def load_annotations(raw):
     # mne.Annotation has onset, duration, description
     #<Annotations | 642 segments: response:201 (314), response:202 (8), ...>
     evts,evts_dict = mne.events_from_annotations(raw)
+    # TODO check to apply 26ms delay as mentioned in ERP core paper
     #evts
         #array([[ 29501,      0,      2],
         #       [ 33941,      0,      2],

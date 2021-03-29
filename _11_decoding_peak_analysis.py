@@ -55,7 +55,7 @@ class DecodingPeakAnalysis(Base):
         #print(f"Difference of ERP peak between face and car condition is {word}significant with alpha={alpha} and p-value={p_value}.")
         #print(test_results)
         pvalues = np.array(pvalues)
-        fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, constrained_layout=True, gridspec_kw={'height_ratios': [4, 6, 1, 1]}, figsize=(14, 8))
+        figure_decoding_analysis, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, constrained_layout=True, gridspec_kw={'height_ratios': [4, 6, 1, 1]}, figsize=(14, 8))
         ax1.plot(time_lst_plt, np.repeat(score_mean, 2), label="score")
         ax1.axhline(y=0.5, color="lightcoral", linestyle='--', label="chance")  # Horizontal line indicating chance (50%)
         ax1.set_xlabel("Time [s]")
@@ -94,6 +94,10 @@ class DecodingPeakAnalysis(Base):
         ax4.set_title(f"Qualitative overview of effect size (Cohen's d) across time, d_max={np.max(cohensds):.3}, min_clipped at 0")
         ax4.xaxis.set_major_locator(ticker.MultipleLocator(0.1))
 
-        plt.show()
+        self.add_figure(figure_decoding_analysis, caption="Decoding peak analysis", section="Analysis")
+
+        self.report(analysis=True)
+
+
 if __name__ == '__main__':
     DecodingPeakAnalysis().run()

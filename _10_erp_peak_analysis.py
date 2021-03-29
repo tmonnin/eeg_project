@@ -55,19 +55,23 @@ class ErpPeakAnalysis(Base):
 
         average = {"faces": grand_avg_faces, "cars": grand_avg_cars, "difference": evoked_difference}
 
-        figure_grand_avg_difference = mne.viz.plot_compare_evokeds(average, picks=electrode, show=True)
-        #self.add_figure
+        figure_grand_avg_difference = mne.viz.plot_compare_evokeds(average, picks=electrode, show=False)
+        self.add_figure(figure_grand_avg_difference, caption="Grand average of evokeds for conditions 'faces' and 'cars'", section="Analysis")
 
         # Evaluate t-test
         data = np.array(peak_lst)
-        hist = plt.hist(data, bins=10)
-        plt.show()
+        figure_histogram, ax = plt.subplots()
+        ax.hist(data, bins=10)
+        self.add_figure(figure_histogram, caption="Histogram of erp peaks vs. H0=0.0", section="Analysis")
         alpha = 0.05
         # Non-parametric paired t-test
         t_values, p_value = scipy.stats.ttest_1samp(data[:,0], 0.0, alternative="less")
 
         word = "not "*(p_value >= alpha)
         print(f"Difference of ERP peak between face and car condition is {word}significant with alpha={alpha} and p-value={p_value}.")
+
+        self.report(analysis=True)
+
 
 if __name__ == '__main__':
     ErpPeakAnalysis().run()

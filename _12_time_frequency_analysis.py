@@ -129,11 +129,11 @@ class TimeFrequencyAnalysis(Base):
             )
             figure_power_spectrum_avg.suptitle(f"Difference at {self.config['electrode']}")
 
-            self.add_figure(
-                figure=figure_power_spectrum_avg,
-                caption="Power spectrum: Total, Evoked, Induced",
-                section="Analysis",
-            )
+            #self.add_figure(
+            #    figure=figure_power_spectrum_avg,
+            #    caption="Power spectrum: Total, Evoked, Induced",
+            #    section="Analysis",
+            #)
 
             power_difference_total_lst.append(power_difference_total)
             power_difference_evoked_lst.append(power_difference_evoked)
@@ -147,7 +147,7 @@ class TimeFrequencyAnalysis(Base):
         power_difference_evoked_avg = mne.combine_evoked(power_difference_evoked_lst, weights="equal")
         power_difference_induced_avg = mne.combine_evoked(power_difference_induced_lst, weights="equal")
 
-        figure_power_spectrum_avg, (ax1, ax2, ax3) = plt.subplots(1, 3)
+        figure_power_spectrum_avg, (ax1, ax2, ax3) = plt.subplots(1, 3, constrained_layout=True, figsize=(14,4))
         mode = "mean"
         baseline = None
         cmin = -3e-10
@@ -161,7 +161,7 @@ class TimeFrequencyAnalysis(Base):
             mode=mode,
             vmin=cmin,
             vmax=cmax,
-            show=False,
+            show=False
         )
         ax2.set_title(f"Average: Difference evoked at {self.config['electrode']}")
         power_difference_evoked_avg.plot(
@@ -171,7 +171,7 @@ class TimeFrequencyAnalysis(Base):
             mode=mode,
             vmin=cmin,
             vmax=cmax,
-            show=False,
+            show=False
         )
         ax3.set_title(f"Average: Difference induced at {self.config['electrode']}")
         power_difference_induced_avg.plot(
@@ -181,15 +181,17 @@ class TimeFrequencyAnalysis(Base):
             mode=mode,
             vmin=cmin,
             vmax=cmax,
-            show=False,
+            show=False
         )
         figure_power_spectrum_avg.suptitle(f"Difference at {self.config['electrode']}")
-        plt.show()
+
         self.add_figure(
             figure=figure_power_spectrum_avg,
             caption="Average power spectrum: Total, Evoked, Induced",
-            section="Analysis",
+            section="Analysis"
         )
+
+        self.report(analysis=True)
 
 
 if __name__ == "__main__":

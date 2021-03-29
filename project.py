@@ -14,6 +14,8 @@ from _04_reference import Reference
 from _05_erp_peak_extraction import ErpPeakExtraction
 from _06_decoding_peak_extraction import DecodingPeakExtraction
 from _10_erp_peak_analysis import ErpPeakAnalysis
+from _11_decoding_peak_analysis import DecodingPeakAnalysis
+from _12_time_frequency_analysis import TimeFrequencyAnalysis
 
 steps_subject = (Filter,
                  CleanChannels,
@@ -25,6 +27,8 @@ steps_subject = (Filter,
                 )
 
 steps_global = (ErpPeakAnalysis,
+                DecodingPeakAnalysis,
+                TimeFrequencyAnalysis,
                )
 
 # Subjects considered in analysis

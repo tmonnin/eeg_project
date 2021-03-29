@@ -3,8 +3,8 @@ from base import Base
 class Filter(Base):
 # Use default filter params according to mne tutorial:
 # https://mne.tools/stable/auto_tutorials/discussions/plot_background_filtering.html#defaults-in-mne-python
-# Low-pass filter at 0.6Hz for slow drifts
-# High-pass filter at 50Hz for line noise
+# High-pass filter at 0.45Hz for slow drifts
+# Low-pass filter at 50Hz for line noise
 # Section "Removing power-line noise with low-pass filtering" in:
 # https://mne.tools/0.15/auto_tutorials/plot_artifacts_correction_filtering.html
     def __init__(self):
@@ -21,8 +21,8 @@ class Filter(Base):
             #Designing a one-pass, zero-phase, non-causal bandpass filter:
             #- Windowed time-domain design (firwin) method
             #- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-            #- Lower passband edge: 0.50
-            #- Lower transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 0.25 Hz)
+            #- Lower passband edge: 0.45 Hz
+            #- Lower transition bandwidth: 0.45 Hz (-6 dB cutoff frequency: 0.23 Hz)
             #- Upper passband edge: 50.00 Hz
             #- Upper transition bandwidth: 12.50 Hz (-6 dB cutoff frequency: 56.25 Hz)
             #- Filter length: 6759 samples (6.601 sec)
