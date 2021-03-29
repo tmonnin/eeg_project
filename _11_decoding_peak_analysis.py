@@ -18,6 +18,7 @@ class DecodingPeakAnalysis(Base):
         # RQ: When is information about the conditions in our data available?
         # https://mne.tools/stable/auto_tutorials/machine-learning/plot_sensors_decoding.html
         pvalues = []
+        cohensds = []
         score_mean = []
         time_lst = []
         time_lst_plt = []
@@ -47,12 +48,14 @@ class DecodingPeakAnalysis(Base):
             alpha = 0.025
             statistics, pvalue = scipy.stats.ttest_1samp(data, 0.5, alternative='greater')
             pvalues.append(pvalue)
-            # TODO effect size
+            # Calculate effect size with Cohan's d
+            cohensds.append((np.mean(data) - 0.5) / (np.sqrt((np.std(data) ** 2 + 0 ** 2) / 2)))
+
         #word = "not "*(p_value >= alpha)
         #print(f"Difference of ERP peak between face and car condition is {word}significant with alpha={alpha} and p-value={p_value}.")
         #print(test_results)
         pvalues = np.array(pvalues)
-        fig, (ax1, ax2, ax3) = plt.subplots(3, 1, constrained_layout=True, gridspec_kw={'height_ratios': [4, 6, 1]}, figsize=(14, 8))
+        fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, constrained_layout=True, gridspec_kw={'height_ratios': [4, 6, 1, 1]}, figsize=(14, 8))
         ax1.plot(time_lst_plt, np.repeat(score_mean, 2), label="score")
         ax1.axhline(y=0.5, color="lightcoral", linestyle='--', label="chance")  # Horizontal line indicating chance (50%)
         ax1.set_xlabel("Time [s]")
@@ -78,9 +81,18 @@ class DecodingPeakAnalysis(Base):
         ax2.yaxis.set_major_locator(ticker.MultipleLocator(0.05*100))
 
         ax3.pcolormesh(time_lst, [0,1], [pvalues < alpha], cmap="RdYlGn")
+        ax3.set_xlabel("Time [s]")
         ax3.set_xlim([0.0, 1.0])
         ax3.yaxis.set_visible(False)
         ax3.set_title(f"Significance of t-test across time")
+        ax3.xaxis.set_major_locator(ticker.MultipleLocator(0.1))
+
+        ax4.pcolormesh(time_lst, [0,1], [np.clip(cohensds, a_min=0, a_max=3)], cmap="RdYlGn")
+        ax4.set_xlabel("Time [s]")
+        ax4.set_xlim([0.0, 1.0])
+        ax4.yaxis.set_visible(False)
+        ax4.set_title(f"Qualitative overview of effect size (Cohen's d) across time, d_max={np.max(cohensds):.3}, min_clipped at 0")
+        ax4.xaxis.set_major_locator(ticker.MultipleLocator(0.1))
 
         plt.show()
 if __name__ == '__main__':

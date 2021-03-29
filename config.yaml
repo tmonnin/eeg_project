@@ -55,4 +55,4 @@ erppeakanalysis:
 decodingpeakanalysis:
   t_start: 0.0
   t_end: 1.0
-  t_sampling: 0.01
+  t_sampling: 0.02
