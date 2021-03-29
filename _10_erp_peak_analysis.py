@@ -36,8 +36,7 @@ class ErpPeakAnalysis(Base):
             evoked_cars_lst.append(evoked_cars)
             evoked_difference = mne.combine_evoked([evoked_faces, evoked_cars], weights=[1, -1])
             #mne.viz.plot_compare_evokeds({"faces": evoked_faces, "cars": evoked_cars, "difference": evoked_difference}, picks=electrode, show=True)
-            # Crop to relevant time frame between 150ms and 200ms as proposed in following tutorial:
-            # https://mne.tools/dev/auto_tutorials/stats-sensor-space/plot_stats_cluster_1samp_test_time_frequency.html
+            # Crop to relevant time frame between 150ms and 200ms as proposed in Rossion 2008
             evoked_difference_cropped = evoked_difference.crop(tmin=0.13, tmax=0.2)
             # TODO use peak finder: https://mne.tools/dev/generated/mne.preprocessing.peak_finder.html
             # Extract peak amplitude on electrode PO8 with mne function
