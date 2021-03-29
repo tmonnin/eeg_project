@@ -26,7 +26,7 @@ subjects_preprocess: [] #"001","002","003"]
 
 filter:
   # Band-pass filter limits
-  fmin: 0.6  # bandpass min frequency in Hz
+  fmin: 0.45  # bandpass min frequency in Hz
   fmax: 50  # bandpass max frequency in Hz
 
 cleanchannels:
@@ -56,3 +56,6 @@ decodingpeakanalysis:
   t_start: 0.0
   t_end: 1.0
   t_sampling: 0.02
+
+timefrequencyanalysis:
+  electrode: "PO8"
