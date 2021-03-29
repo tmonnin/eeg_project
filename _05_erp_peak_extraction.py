@@ -23,12 +23,17 @@ class ErpPeakExtraction(Base):
         difference = mne.combine_evoked([epochs_face.average(),
                                          epochs_car.average()],
                                          weights=[1, -1])
+
+        average = {"faces": epochs_face.average(), "cars": epochs_car.average(), "difference": difference}
+        # plot ERP
+        figure_compare_evokeds = mne.viz.plot_compare_evokeds(average, picks=electrode, show=False)
         # plot difference wave
         figure_difference = difference.plot_joint(times=[0.15], title='Face - Car', show=False)
 
         evt_plot = mne.viz.plot_events(self.evts, event_id=evts_dict_categorized, show=False)
         self.add_figure(figure=evt_plot, caption="Overview of events", section="Analyse")
         self.add_figure(figure=figure_difference, caption="Difference of conditions", section="Analyse")
+        self.add_figure(figure=figure_compare_evokeds, caption="Comparison of evokeds", section="Analyse")
         self.add_figure(figure=figure_face, caption="Face condition", section="Analyse")
         self.add_figure(figure=figure_car, caption="Car condition", section="Analyse")
 
