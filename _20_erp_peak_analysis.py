@@ -41,7 +41,7 @@ class ErpPeakAnalysis(Base):
             # https://mne.tools/stable/generated/mne.EvokedArray.html#mne.EvokedArray.get_peak
             _, _, peak_difference = evoked_difference_cropped.pick(electrode).get_peak(return_amplitude=True)
             # Fill array with peak difference and 0 to statistically test if difference is significantly different from 0
-            peak_lst.append([peak_difference, 0])
+            peak_lst.append(peak_difference)
             peaks[self.subject] = peak_difference
         with open(fname.erppeaks(electrode=electrode), "w") as json_file:
             json.dump(peaks, json_file, indent=4)
@@ -57,20 +57,37 @@ class ErpPeakAnalysis(Base):
         self.add_figure(figure_grand_avg_difference, caption="Grand average of evokeds for conditions 'faces' and 'cars'")
 
 
-        # Non-parametric paired t-test
+        ### Non-parametric paired t-test
         data = np.array(peak_lst)
-        alpha = 0.05
-        t_values, p_value = scipy.stats.ttest_1samp(data[:,0], 0.0, alternative="less")
-
+        alpha = self.config["alpha"]
+        # Unwinsorized data
+        t_values, p_value = scipy.stats.ttest_1samp(data, 0.0, alternative="less")
         # Evaluate distribution
-        figure_histogram, ax_histogram = plt.subplots()
-        ax_histogram.hist(data*1e6, bins=10)
-        ax_histogram.set_xlabel(r"Potential [$\mu V$]")
-        ax_histogram.set_ylabel("Count")
+        figure_histogram, (ax1, ax2) = plt.subplots(1, 2, constrained_layout=True, figsize=(12, 5))
+        _, bins, _ = ax1.hist(np.stack([data*1e6, np.zeros_like(data)]).T, bins=10, label=("ERP peaks of difference wave", "H0"))
+        ax1.axvline(x=np.mean(data)*1e6, color="lightcoral", linestyle='--', label=f"Mean={np.mean(data)*1e6:.2f}"+r"$\mu V$")
+        ax1.set_xlabel(r"ERP peak difference between conditions faces-cars [$\mu V$]")
+        ax1.set_ylabel("Count")
+        ax1.legend()
         if p_value < alpha:
-            ax_histogram.set_title(f"Difference between face/car condition is significant:\nalpha={alpha}, p-value={p_value:.5f}")
+            ax1.set_title(f"Difference between face/car condition is significant:\nalpha={alpha}, p-value={p_value:.5f}")
         else:
-            ax_histogram.set_title(f"Difference between face/car condition is NOT significant:\nalpha={alpha}, p-value={p_value:.5f}")
+            ax1.set_title(f"Difference between face/car condition is NOT significant:\nalpha={alpha}, p-value={p_value:.5f}")
+        
+        # Winsorized data
+        winsorized_lims = self.config["winsorized_lims"]
+        data = scipy.stats.mstats.winsorize(data, limits=[winsorized_lims, winsorized_lims])
+        t_values, p_value = scipy.stats.ttest_1samp(data, 0.0, alternative="less")
+        # Evaluate distribution
+        ax2.hist(np.stack([data*1e6, np.zeros_like(data)]).T, bins=bins, label=("Winsorized ERP peaks of difference wave", "H0"))
+        ax2.axvline(x=np.mean(data)*1e6, color="lightcoral", linestyle='--', label=f"Winsorized mean={np.mean(data)*1e6:.2f}"+r"$\mu V$"+f"\nwinsorized limits={winsorized_lims}")
+        ax2.set_xlabel(r"ERP peak difference between conditions faces-cars [$\mu V$]")
+        ax2.set_ylabel("Count")
+        ax2.legend()
+        if p_value < alpha:
+            ax2.set_title(f"Winsorized difference between face/car condition is significant:\nalpha={alpha}, p-value={p_value:.5f}")
+        else:
+            ax2.set_title(f"Winsorized difference between face/car condition is NOT significant:\nalpha={alpha}, p-value={p_value:.5f}")
         self.add_figure(figure_histogram, caption="Histogram of ERP peaks in difference wave 'faces-cars' (blue) vs. Null hypothesis (orange)")
         
 

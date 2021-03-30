@@ -35,7 +35,7 @@ class DecodingAnalysis(Base):
                     score = np.mean(scores[time_idx[0]:time_idx[-1]+1])
                     data.append(score)
             score_mean += [np.mean(data)]
-            alpha = 0.025
+            alpha = self.config["alpha"]
             statistics, pvalue = scipy.stats.ttest_1samp(data, 0.5, alternative='greater')
             pvalues.append(pvalue)
             # Calculate effect size with Cohan's d
@@ -71,7 +71,7 @@ class DecodingAnalysis(Base):
         ax3.set_xlabel("Time [s]")
         ax3.set_xlim([0.0, 1.0])
         ax3.yaxis.set_visible(False)
-        ax3.set_title(f"Significance of t-test across time")
+        ax3.set_title(f"Significance of t-test across time, alpha={alpha}")
         ax3.xaxis.set_major_locator(ticker.MultipleLocator(0.1))
 
         ax4.pcolormesh(time_lst, [0,1], [np.clip(cohensds, a_min=0, a_max=3)], cmap="RdYlGn")

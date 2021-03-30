@@ -56,7 +56,7 @@ class ICA(Base):
         #self.add_figure(figure=figure_post_ica, caption="After applying ICA")
         raw_pre_ica.load_data()
         figure_ica_overlay = ica.plot_overlay(raw_pre_ica, exclude=bad_comps, show=False)
-        self.add_figure(figure=figure_ica_overlay, caption="ICA Overlay")
+        self.add_figure(figure=figure_ica_overlay, caption="ICA Overlay, ordinate in [V]")
 
 
 if __name__ == '__main__':

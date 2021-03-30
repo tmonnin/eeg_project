@@ -55,11 +55,16 @@ timefrequencyextraction:
 
 erppeakanalysis:
   electrode: "PO8"
+  alpha: 0.05
+  winsorized_lims: 0.25
 
 decodinganalysis:
   t_start: 0.0
   t_end: 1.0
   t_sampling: 0.02
+  alpha: 0.025
 
 timefrequencyanalysis:
+  alpha: 0.05
+  threshold_cluster_permutation_test: 4
   electrode: "PO8"
