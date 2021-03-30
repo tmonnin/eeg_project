@@ -21,6 +21,7 @@ class ErpPeakAnalysis(Base):
         electrode = self.config["electrode"]
         peaks = {}
         peak_lst = []
+        time_lst = []
         evoked_faces_lst = []
         evoked_cars_lst = []
         for self.subject in self.config["subjects"]:
@@ -39,9 +40,10 @@ class ErpPeakAnalysis(Base):
             # Potential extension: use peak finder: https://mne.tools/dev/generated/mne.preprocessing.peak_finder.html
             # Extract peak amplitude on electrode PO8 with mne function
             # https://mne.tools/stable/generated/mne.EvokedArray.html#mne.EvokedArray.get_peak
-            _, _, peak_difference = evoked_difference_cropped.pick(electrode).get_peak(return_amplitude=True)
+            _, time, peak_difference = evoked_difference_cropped.pick(electrode).get_peak(return_amplitude=True)
             # Fill array with peak difference and 0 to statistically test if difference is significantly different from 0
             peak_lst.append(peak_difference)
+            time_lst.append(time)
             peaks[self.subject] = peak_difference
         with open(fname.erppeaks(electrode=electrode), "w") as json_file:
             json.dump(peaks, json_file, indent=4)
@@ -56,9 +58,17 @@ class ErpPeakAnalysis(Base):
         figure_grand_avg_difference = mne.viz.plot_compare_evokeds(average, picks=electrode, show=False)
         self.add_figure(figure_grand_avg_difference, caption="Grand average of evokeds for conditions 'faces' and 'cars'")
 
+        # Analyse correlation between peaks and time
+        data = np.array(peak_lst)
+        time = np.array(time_lst)
+        figure_peak_time_correlation, ax = plt.subplots()
+        ax.scatter(data*1e6, time)
+        ax.axvline(x=0, color="lightcoral", linestyle='--')
+        ax.set_xlabel(r"ERP peak difference between conditions faces-cars [$\mu V$]")
+        ax.set_ylabel("Time [s]")
+        self.add_figure(figure_peak_time_correlation, caption="Scatter plot to visualize correlation between ERP peak difference and time")
 
         ### Non-parametric paired t-test
-        data = np.array(peak_lst)
         alpha = self.config["alpha"]
         # Unwinsorized data
         t_values, p_value = scipy.stats.ttest_1samp(data, 0.0, alternative="less")
@@ -70,24 +80,25 @@ class ErpPeakAnalysis(Base):
         ax1.set_ylabel("Count")
         ax1.legend()
         if p_value < alpha:
-            ax1.set_title(f"Difference between face/car condition is significant:\nalpha={alpha}, p-value={p_value:.5f}")
+            ax1.set_title(f"Difference between face/car condition is significant:\nalpha={alpha}, p-value={p_value:.5f}\nMean of "+r"$t_{peak}$" + f"= {np.mean(time):.3f}s")
         else:
-            ax1.set_title(f"Difference between face/car condition is NOT significant:\nalpha={alpha}, p-value={p_value:.5f}")
-        
+            ax1.set_title(f"Difference between face/car condition is NOT significant:\nalpha={alpha}, p-value={p_value:.5f}\nMean of "+r"$t_{peak}$" + f"= {np.mean(time):.3f}s")
+
         # Winsorized data
         winsorized_lims = self.config["winsorized_lims"]
         data = scipy.stats.mstats.winsorize(data, limits=[winsorized_lims, winsorized_lims])
+        time = scipy.stats.mstats.winsorize(time, limits=[winsorized_lims, winsorized_lims])
         t_values, p_value = scipy.stats.ttest_1samp(data, 0.0, alternative="less")
         # Evaluate distribution
         ax2.hist(np.stack([data*1e6, np.zeros_like(data)]).T, bins=bins, label=("Winsorized ERP peaks of difference wave", "H0"))
-        ax2.axvline(x=np.mean(data)*1e6, color="lightcoral", linestyle='--', label=f"Winsorized mean={np.mean(data)*1e6:.2f}"+r"$\mu V$"+f"\nwinsorized limits={winsorized_lims}")
+        ax2.axvline(x=np.mean(data)*1e6, color="lightcoral", linestyle='--', label=f"Winsorized mean={np.mean(data)*1e6:.2f}"+r"$\mu V$"+f"\n(winsorized limits={winsorized_lims})")
         ax2.set_xlabel(r"ERP peak difference between conditions faces-cars [$\mu V$]")
         ax2.set_ylabel("Count")
         ax2.legend()
         if p_value < alpha:
-            ax2.set_title(f"Winsorized difference between face/car condition is significant:\nalpha={alpha}, p-value={p_value:.5f}")
+            ax2.set_title(f"Winsorized difference between face/car condition is significant:\nalpha={alpha}, p-value={p_value:.5f}\nWinsorized mean of "+r"$t_{peak}$" + f"= {np.mean(time):.3f}s")
         else:
-            ax2.set_title(f"Winsorized difference between face/car condition is NOT significant:\nalpha={alpha}, p-value={p_value:.5f}")
+            ax2.set_title(f"Winsorized difference between face/car condition is NOT significant:\nalpha={alpha}, p-value={p_value:.5f}\nWinsorized mean of "+r"$t_{peak}$" + f"= {np.mean(time):.3f}s")
         self.add_figure(figure_histogram, caption="Histogram of ERP peaks in difference wave 'faces-cars' (blue) vs. Null hypothesis (orange)")
         
 
