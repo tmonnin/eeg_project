@@ -24,12 +24,10 @@ class ErpPeakAnalysis(Base):
         evoked_faces_lst = []
         evoked_cars_lst = []
         for self.subject in self.config["subjects"]:
-            #self.load()
             epoch = mne.read_epochs(fname.epochs(subject=self.subject))
-            # Equalize the number of events per condition
+            # Do not equalize the number of events per condition to avoid problems with all subjects counting equally
             # http://predictablynoisy.com/mne-python/generated/mne.Epochs.html#mne.Epochs.equalize_event_counts
-            # Dropped 9 epochs: 40, 116, 161, 389, 393, 399, 403, 455, 468
-            epoch.equalize_event_counts(["faces", "cars"])
+            #epoch.equalize_event_counts(["faces", "cars"])
             evoked_faces = epoch["faces"].average()
             evoked_cars = epoch["cars"].average()
             evoked_faces_lst.append(evoked_faces)
@@ -38,7 +36,7 @@ class ErpPeakAnalysis(Base):
             #mne.viz.plot_compare_evokeds({"faces": evoked_faces, "cars": evoked_cars, "difference": evoked_difference}, picks=electrode, show=True)
             # Crop to relevant time frame between 150ms and 200ms as proposed in Rossion 2008
             evoked_difference_cropped = evoked_difference.crop(tmin=0.13, tmax=0.2)
-            # TODO use peak finder: https://mne.tools/dev/generated/mne.preprocessing.peak_finder.html
+            # Potential extension: use peak finder: https://mne.tools/dev/generated/mne.preprocessing.peak_finder.html
             # Extract peak amplitude on electrode PO8 with mne function
             # https://mne.tools/stable/generated/mne.EvokedArray.html#mne.EvokedArray.get_peak
             _, _, peak_difference = evoked_difference_cropped.pick(electrode).get_peak(return_amplitude=True)
@@ -58,19 +56,23 @@ class ErpPeakAnalysis(Base):
         figure_grand_avg_difference = mne.viz.plot_compare_evokeds(average, picks=electrode, show=False)
         self.add_figure(figure_grand_avg_difference, caption="Grand average of evokeds for conditions 'faces' and 'cars'")
 
-        # Evaluate t-test
-        data = np.array(peak_lst)
-        figure_histogram, ax = plt.subplots()
-        ax.hist(data*1e6)#, bins=10)
-        ax.set_xlabel(r"Potential [$\mu V$]")
-        ax.set_ylabel("Count")
-        self.add_figure(figure_histogram, caption="Histogram of ERP peaks in difference wave 'faces-cars' (blue) vs. Null hypothesis (orange)")
-        alpha = 0.05
+
         # Non-parametric paired t-test
+        data = np.array(peak_lst)
+        alpha = 0.05
         t_values, p_value = scipy.stats.ttest_1samp(data[:,0], 0.0, alternative="less")
 
-        word = "not "*(p_value >= alpha)
-        print(f"Difference of ERP peak between face and car condition is {word}significant with alpha={alpha} and p-value={p_value}.")
+        # Evaluate distribution
+        figure_histogram, ax_histogram = plt.subplots()
+        ax_histogram.hist(data*1e6, bins=10)
+        ax_histogram.set_xlabel(r"Potential [$\mu V$]")
+        ax_histogram.set_ylabel("Count")
+        if p_value < alpha:
+            ax_histogram.set_title(f"Difference between face/car condition is significant:\nalpha={alpha}, p-value={p_value:.5f}")
+        else:
+            ax_histogram.set_title(f"Difference between face/car condition is NOT significant:\nalpha={alpha}, p-value={p_value:.5f}")
+        self.add_figure(figure_histogram, caption="Histogram of ERP peaks in difference wave 'faces-cars' (blue) vs. Null hypothesis (orange)")
+        
 
         self.report(analysis=True)
 
