@@ -28,7 +28,7 @@ class ErpPeakExtraction(Base):
         # plot ERP
         figure_compare_evokeds = mne.viz.plot_compare_evokeds(average, picks=electrode, show=False)
         # plot difference wave
-        figure_difference = difference.plot_joint(times=[0.15], title='Face - Car', show=False)
+        figure_difference = difference.plot_joint(times=self.config["difference_wave_times"], title="Difference waves for conditions 'Face - Car'", show=False)
 
         evt_plot = mne.viz.plot_events(self.evts, event_id=evts_dict_categorized, show=False)
         self.add_figure(figure=evt_plot, caption="Overview of events")

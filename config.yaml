@@ -46,11 +46,13 @@ reference: {}
 
 erppeakextraction:
   electrode: "PO8"
+  difference_wave_times: [0.17, 0.21, 0.30, 0.41]
 
 decodingextraction:
   electrode: "PO8"
 
 timefrequencyextraction:
+  morlet_n_cycles_factor: 0.333
   electrode: "PO8"
 
 erppeakanalysis:

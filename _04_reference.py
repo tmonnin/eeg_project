@@ -21,10 +21,10 @@ class Reference(Base):
         # https://mne.tools/dev/auto_tutorials/preprocessing/plot_45_projectors_background.html
         self.raw.load_data()
         mne.set_eeg_reference(self.raw, ref_channels='average', copy=False, projection=True, ch_type='auto', forward=None, verbose=None)
-        figure_without_reference = self.raw.plot(proj=False, n_channels=len(self.raw.ch_names), show=False)#,scalings =40e-6)
-        self.add_figure(figure=figure_without_reference, caption="EEG without re-referencing")
-        figure_with_reference = self.raw.plot(proj=True, n_channels=len(self.raw.ch_names), show=False)#,scalings =40e-6)
-        self.add_figure(figure=figure_with_reference, caption="EEG with re-referencing")
+        figure_without_reference = self.raw.plot(proj=False, n_channels=5, start=110, show=False, scalings=40e-6)
+        self.add_figure(figure=figure_without_reference, caption="EEG without re-referencing for first 5 channels")
+        figure_with_reference = self.raw.plot(proj=True, n_channels=5, start=110, show=False, scalings=40e-6)
+        self.add_figure(figure=figure_with_reference, caption="EEG with re-referencing for first 5 channels")
 
 
 if __name__ == '__main__':

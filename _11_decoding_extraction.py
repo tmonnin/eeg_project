@@ -32,6 +32,8 @@ class DecodingExtraction(Base):
         epochs = mne.read_epochs(fname.epochs(subject=self.subject))
         # Only consider epochs with faces or cars condition for classification
         epochs = epochs[["faces", "cars"]]
+        # Required to avoid higher scores with prior of unequal distribution
+        epochs.equalize_event_counts(["faces", "cars"])
         epochs = epochs.crop(tmin=-0.1, tmax=1.0)
         labels = self.get_labels(epochs)
 

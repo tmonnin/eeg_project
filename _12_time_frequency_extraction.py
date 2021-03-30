@@ -22,7 +22,7 @@ class TimeFrequencyExtraction(Base):
         freq = np.logspace(*np.log10([5, 50]), num=30)
         # The number of cycles defines the trade-off between time and frequency
         # Increasing the number of cycles increases frequency resolution
-        cycles = freq / 3
+        cycles = freq * self.config["morlet_n_cycles_factor"]
 
         # Transformation to frequency domain via Morlet wavelets
 
