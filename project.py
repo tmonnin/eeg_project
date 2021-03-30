@@ -11,12 +11,12 @@ from _01_clean_channels import CleanChannels
 from _02_clean_segments import CleanSegments
 from _03_ica import ICA
 from _04_reference import Reference
-from _05_erp_peak_extraction import ErpPeakExtraction
-from _06_decoding_peak_extraction import DecodingPeakExtraction
-from _07_time_frequency_extraction import TimeFrequencyExtraction
-from _10_erp_peak_analysis import ErpPeakAnalysis
-from _11_decoding_peak_analysis import DecodingPeakAnalysis
-from _12_time_frequency_analysis import TimeFrequencyAnalysis
+from _10_erp_peak_extraction import ErpPeakExtraction
+from _11_decoding_extraction import DecodingExtraction
+from _12_time_frequency_extraction import TimeFrequencyExtraction
+from _20_erp_peak_analysis import ErpPeakAnalysis
+from _21_decoding_analysis import DecodingAnalysis
+from _22_time_frequency_analysis import TimeFrequencyAnalysis
 
 steps_subject = (Filter,
                  CleanChannels,
@@ -24,12 +24,12 @@ steps_subject = (Filter,
                  ICA,
                  Reference,
                  ErpPeakExtraction,
-                 DecodingPeakExtraction,
+                 DecodingExtraction,
                  TimeFrequencyExtraction,
                 )
 
 steps_global = (ErpPeakAnalysis,
-                DecodingPeakAnalysis,
+                DecodingAnalysis,
                 TimeFrequencyAnalysis,
                )
 

@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 import mne
 from config import fname
 from base import Base
-from _05_erp_peak_extraction import ErpPeakExtraction
+from _12_time_frequency_extraction import TimeFrequencyExtraction
 
 
 class TimeFrequencyAnalysis(Base):
     def __init__(self):
-        prev = ErpPeakExtraction()
+        prev = TimeFrequencyExtraction()
         super().__init__(self.__class__.__name__.lower(), prev, section=("Analysis", "Time Frequency Analysis"))
 
     def run(self):

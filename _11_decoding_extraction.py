@@ -16,13 +16,13 @@ import mne.decoding
 
 from config import fname
 from base import Base
-from _05_erp_peak_extraction import ErpPeakExtraction
+from _10_erp_peak_extraction import ErpPeakExtraction
 
-class DecodingPeakExtraction(Base):
+class DecodingExtraction(Base):
 
     def __init__(self):
         prev = ErpPeakExtraction()
-        super().__init__(self.__class__.__name__.lower(), prev, section=("Pre-Analysis", "Decoding Peak Extraction"))
+        super().__init__(self.__class__.__name__.lower(), prev, section=("Pre-Analysis", "Decoding Extraction"))
 
     def process(self):
         # Decoding analysis Decode the main contrast of the experiment across time
@@ -32,14 +32,8 @@ class DecodingPeakExtraction(Base):
         epochs = mne.read_epochs(fname.epochs(subject=self.subject))
         # Only consider epochs with faces or cars condition for classification
         epochs = epochs[["faces", "cars"]]
-        #epochs = self.get_epochs_concat(self.config["subjects"])
-        # TODO figure out time window that excludes response
-        # TODO change to epochs_train
         epochs = epochs.crop(tmin=-0.1, tmax=1.0)
         labels = self.get_labels(epochs)
-        # TODO check picks
-        #data = epochs.get_data(picks=["PO7", "PO8"]).mean(axis=2)
-        #plt.scatter(data[:,0],data[:,1],color=np.array(["red","green"])[labels])
 
         models = (("LDA", LinearDiscriminantAnalysis()),
                   ("LogisticRegression", sklearn.linear_model.LogisticRegression(solver="lbfgs", max_iter=500)),
@@ -52,7 +46,7 @@ class DecodingPeakExtraction(Base):
         )
         fig, axs = plt.subplots(len(models), len(feature_space), constrained_layout=True, figsize=(16, 10))
         fig.suptitle("Decoding Analysis")
-        peaks = {}
+        scores_dict = {}
         for ax, ((model_name, model), (feature_space_name, feature_space)) in zip(axs.flatten(), itertools.product(models, feature_space)):
             pipe_simple = sklearn.pipeline.Pipeline([('feature_space', feature_space), ('model', model)])
             cv = sklearn.model_selection.StratifiedShuffleSplit(10, test_size=0.2, random_state=0)
@@ -62,29 +56,13 @@ class DecodingPeakExtraction(Base):
             times = epochs.times.tolist()
             peak_time = times[np.argmax(scores)]
             peak_score = np.max(scores)
-            peaks[f"{feature_space_name}-{model_name}"] = {"times": times, "scores": scores}
+            scores_dict[f"{feature_space_name}-{model_name}"] = {"times": times, "scores": scores}
             self.plot(ax, times, scores, model_name, feature_space_name, peak_time, peak_score)
 
         self.add_figure(figure=fig, caption="Comparison of decoding techniques")
 
-        with open(fname.decodingpeak(subject=self.subject), "w") as json_file:
-            json.dump(peaks, json_file, indent=4)
-
-            #try:
-            #    csp.fit_transform(epochs.get_data(), labels)
-                #print(csp)
-                # CSP(component_order='mutual_info', cov_est='concat', cov_method_params=None,
-                # log=None, n_components=2, norm_trace=False, rank=None, reg=None,
-                # transform_into='average_power')
-            #    csp_data = csp.transform(epochs.get_data())
-                 #scores = sklearn.model_selection.cross_val_score(pipe_simple, epochs.get_data(), labels, cv=cv, n_jobs=1)
-                #print("Accuracy: {:.1f}%, ".format(scores.mean()*100))
-            #    plt.scatter(csp_data[:,0],csp_data[:,1],color=np.array(["red","green"])[labels])
-                #csp.plot_filters(epochs.info)
-                #csp.plot_patterns(epochs.info)
-            #    plt.show()
-            #except:
-            #    pass
+        with open(fname.decoding_score(subject=self.subject), "w") as json_file:
+            json.dump(scores_dict, json_file, indent=4)
 
     @staticmethod
     def plot(ax, x, y, model_name, feature_space_name, peak_time, peak_score):
@@ -128,4 +106,4 @@ class DecodingPeakExtraction(Base):
 
 
 if __name__ == '__main__':
-    DecodingPeakExtraction().run()
+    DecodingExtraction().run()

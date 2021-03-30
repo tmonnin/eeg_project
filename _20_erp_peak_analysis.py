@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import mne
 from config import fname
 from base import Base
-from _05_erp_peak_extraction import ErpPeakExtraction
+from _10_erp_peak_extraction import ErpPeakExtraction
 
 class ErpPeakAnalysis(Base):
 

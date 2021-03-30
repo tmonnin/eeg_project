@@ -46,7 +46,7 @@ reference: {}
 erppeakextraction:
   electrode: "PO8"
 
-decodingpeakextraction:
+decodingextraction:
   electrode: "PO8"
 
 timefrequencyextraction:
@@ -55,7 +55,7 @@ timefrequencyextraction:
 erppeakanalysis:
   electrode: "PO8"
 
-decodingpeakanalysis:
+decodinganalysis:
   t_start: 0.0
   t_end: 1.0
   t_sampling: 0.02
