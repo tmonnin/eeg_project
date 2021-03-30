@@ -49,6 +49,9 @@ erppeakextraction:
 decodingpeakextraction:
   electrode: "PO8"
 
+timefrequencyextraction:
+  electrode: "PO8"
+
 erppeakanalysis:
   electrode: "PO8"
 
