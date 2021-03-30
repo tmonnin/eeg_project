@@ -47,7 +47,7 @@ class DecodingExtraction(Base):
                          ("Vectorizer", mne.decoding.Vectorizer()),
         )
         fig, axs = plt.subplots(len(models), len(feature_space), constrained_layout=True, figsize=(16, 10))
-        fig.suptitle("Decoding Analysis")
+        fig.suptitle("Comparison of decoding techniques")
         scores_dict = {}
         for ax, ((model_name, model), (feature_space_name, feature_space)) in zip(axs.flatten(), itertools.product(models, feature_space)):
             pipe_simple = sklearn.pipeline.Pipeline([('feature_space', feature_space), ('model', model)])
@@ -72,8 +72,8 @@ class DecodingExtraction(Base):
         ax.plot(x, y, label="score")
         ax.scatter(peak_time, peak_score, s=200, color='red', marker='x', linewidths=3)
         ax.set_xlabel("Time [s]")
-        ax.set_ylabel("ROC_AUC")
-        ax.set_xlim([0.0, 0.5])
+        ax.set_ylabel("ROC_AUC Score")
+        ax.set_xlim([0.0, 1.0])
         ax.set_ylim([0.3, 1.0])
         ax.set_title(f"{feature_space_name} - {model_name}")
         ax.legend()

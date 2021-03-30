@@ -25,11 +25,11 @@ class CleanSegments(Base):
             'thresh': epochs_thresh.average(),
             'ar': epochs_ar.average()
             }, picks=self.config["electrode"], show=False)
-        self.add_figure(figure=figure_compare_evoked, caption="Diagram of different approaches for cleaning segments")
-        figure_pre = epochs_none.plot_image(combine='mean', picks="eeg", show=False, title="Actvity over epochs before cleaning")
-        self.add_figure(figure=figure_pre, caption="Actvity over epochs before cleaning")
-        figure_post = epochs_manual.plot_image(combine='mean', picks="eeg", show=False, title="Actvity over epochs after cleaning")
-        self.add_figure(figure=figure_post, caption="Actvity over epochs after cleaning")
+        self.add_figure(figure=figure_compare_evoked, caption="Comparison of different approaches for cleaning segments")
+        figure_pre = epochs_none.plot_image(combine='mean', picks="eeg", show=False, title="Activity over epochs before cleaning")
+        self.add_figure(figure=figure_pre, caption="Activity over epochs before cleaning")
+        figure_post = epochs_manual.plot_image(combine='mean', picks="eeg", show=False, title="Activity over epochs after cleaning")
+        self.add_figure(figure=figure_post, caption="Activity over epochs after cleaning")
 
     def get_epochs_none(self):
         epochs = mne.Epochs(self.raw,self.evts,self.evts_dict_stim,tmin=-0.1,tmax=1,reject_by_annotation=False)
