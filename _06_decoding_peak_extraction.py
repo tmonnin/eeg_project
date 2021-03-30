@@ -22,7 +22,7 @@ class DecodingPeakExtraction(Base):
 
     def __init__(self):
         prev = ErpPeakExtraction()
-        super().__init__(self.__class__.__name__.lower(), prev)
+        super().__init__(self.__class__.__name__.lower(), prev, section=("Pre-Analysis", "Decoding Peak Extraction"))
 
     def process(self):
         # Decoding analysis Decode the main contrast of the experiment across time
@@ -65,7 +65,7 @@ class DecodingPeakExtraction(Base):
             peaks[f"{feature_space_name}-{model_name}"] = {"times": times, "scores": scores}
             self.plot(ax, times, scores, model_name, feature_space_name, peak_time, peak_score)
 
-        self.add_figure(figure=fig, caption="Comparison of decoding techniques", section="Analysis")
+        self.add_figure(figure=fig, caption="Comparison of decoding techniques")
 
         with open(fname.decodingpeak(subject=self.subject), "w") as json_file:
             json.dump(peaks, json_file, indent=4)

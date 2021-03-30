@@ -11,7 +11,7 @@ class ErpPeakAnalysis(Base):
 
     def __init__(self):
         prev = ErpPeakExtraction()
-        super().__init__(self.__class__.__name__.lower(), prev)
+        super().__init__(self.__class__.__name__.lower(), prev, section=("Analysis", "ERP Peak Analysis"))
 
     def run(self):
         # Extract the study-relevant ERP peak subjectwise (e.g. one value per subject) and statistically test them. 
@@ -56,13 +56,15 @@ class ErpPeakAnalysis(Base):
         average = {"faces": grand_avg_faces, "cars": grand_avg_cars, "difference": evoked_difference}
 
         figure_grand_avg_difference = mne.viz.plot_compare_evokeds(average, picks=electrode, show=False)
-        self.add_figure(figure_grand_avg_difference, caption="Grand average of evokeds for conditions 'faces' and 'cars'", section="Analysis")
+        self.add_figure(figure_grand_avg_difference, caption="Grand average of evokeds for conditions 'faces' and 'cars'")
 
         # Evaluate t-test
         data = np.array(peak_lst)
         figure_histogram, ax = plt.subplots()
-        ax.hist(data, bins=10)
-        self.add_figure(figure_histogram, caption="Histogram of erp peaks vs. H0=0.0", section="Analysis")
+        ax.hist(data*1e6)#, bins=10)
+        ax.set_xlabel(r"Potential [$\mu V$]")
+        ax.set_ylabel("Count")
+        self.add_figure(figure_histogram, caption="Histogram of ERP peaks in difference wave 'faces-cars' (blue) vs. Null hypothesis (orange)")
         alpha = 0.05
         # Non-parametric paired t-test
         t_values, p_value = scipy.stats.ttest_1samp(data[:,0], 0.0, alternative="less")

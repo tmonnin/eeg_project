@@ -9,10 +9,11 @@ from config import fname
 
 class Base:
 
-    def __init__(self, filebase, prev):
+    def __init__(self, filebase, prev, section):
         mne.set_log_level('INFO')
         self.filebase = filebase
         self.prev = prev
+        self.section = section
         self.load_config(self.filebase, path="config.yaml")
         self.raw = None
         self.figures = []
@@ -97,15 +98,15 @@ class Base:
             for f in self.figures:
                 report.add_figs_to_section(
                     f[0],
-                    captions=f[1],
-                    section=f[2],
+                    captions=f"{self.section[1]}: {f[1]}",
+                    section=self.section[0],
                     replace=True
                 )
             report.save(report_html_path, overwrite=True,
                         open_browser=False)
 
-    def add_figure(self, figure, caption, section):
-        self.figures.append((figure, caption, section))
+    def add_figure(self, figure, caption):
+        self.figures.append((figure, caption))
 
     def get_epochs(self):
         # Epoching requires to have bad segments set

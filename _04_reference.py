@@ -6,7 +6,7 @@ class Reference(Base):
 
     def __init__(self):
         prev = ICA()
-        super().__init__(self.__class__.__name__.lower(), prev)
+        super().__init__(self.__class__.__name__.lower(), prev, section=("Preprocessing", "Re-Reference"))
 
     def process(self):
         # https://mne.tools/stable/generated/mne.set_eeg_reference.html
@@ -22,9 +22,9 @@ class Reference(Base):
         self.raw.load_data()
         mne.set_eeg_reference(self.raw, ref_channels='average', copy=False, projection=True, ch_type='auto', forward=None, verbose=None)
         figure_without_reference = self.raw.plot(proj=False, n_channels=len(self.raw.ch_names), show=False)#,scalings =40e-6)
-        self.add_figure(figure=figure_without_reference, caption="EEG without re-referencing", section="Preprocessing")
+        self.add_figure(figure=figure_without_reference, caption="EEG without re-referencing")
         figure_with_reference = self.raw.plot(proj=True, n_channels=len(self.raw.ch_names), show=False)#,scalings =40e-6)
-        self.add_figure(figure=figure_with_reference, caption="EEG with re-referencing", section="Preprocessing")
+        self.add_figure(figure=figure_with_reference, caption="EEG with re-referencing")
 
 
 if __name__ == '__main__':

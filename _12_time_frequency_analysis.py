@@ -10,7 +10,7 @@ from _05_erp_peak_extraction import ErpPeakExtraction
 class TimeFrequencyAnalysis(Base):
     def __init__(self):
         prev = ErpPeakExtraction()
-        super().__init__(self.__class__.__name__.lower(), prev)
+        super().__init__(self.__class__.__name__.lower(), prev, section=("Analysis", "Time Frequency Analysis"))
 
     def run(self):
         # Time Frequency analysis: Calculate an induced time-frequency analysis of the main experimental contrast
@@ -72,8 +72,7 @@ class TimeFrequencyAnalysis(Base):
 
         self.add_figure(
             figure=figure_power_spectrum_avg,
-            caption="Average power spectrum: Total, Evoked, Induced",
-            section="Analysis"
+            caption="Average power spectrum: Total, Evoked, Induced"
         )
 
         self.report(analysis=True)

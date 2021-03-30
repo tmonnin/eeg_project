@@ -11,7 +11,7 @@ class DecodingPeakAnalysis(Base):
 
     def __init__(self):
         prev = DecodingPeakExtraction()
-        super().__init__(self.__class__.__name__.lower(), prev)
+        super().__init__(self.__class__.__name__.lower(), prev, section=("Analysis", "Decoding Peak Analysis"))
 
     def run(self):
         # Decoding analysis Decode the main contrast of the experiment across time
@@ -94,7 +94,7 @@ class DecodingPeakAnalysis(Base):
         ax4.set_title(f"Qualitative overview of effect size (Cohen's d) across time, d_max={np.max(cohensds):.3}, min_clipped at 0")
         ax4.xaxis.set_major_locator(ticker.MultipleLocator(0.1))
 
-        self.add_figure(figure_decoding_analysis, caption="Decoding peak analysis", section="Analysis")
+        self.add_figure(figure_decoding_analysis, caption="Decoding score, significance and effect size across time")
 
         self.report(analysis=True)
 

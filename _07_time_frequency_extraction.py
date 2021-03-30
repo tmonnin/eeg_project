@@ -9,7 +9,7 @@ class TimeFrequencyExtraction(Base):
 
     def __init__(self):
         prev = ErpPeakExtraction()
-        super().__init__(self.__class__.__name__.lower(), prev)
+        super().__init__(self.__class__.__name__.lower(), prev, section=("Pre-Analysis", "Time Frequency Extraction"))
 
     def process(self):
 
@@ -122,8 +122,7 @@ class TimeFrequencyExtraction(Base):
 
         self.add_figure(
             figure=figure_power_spectrum_avg,
-            caption="Power spectrum: Total, Evoked, Induced",
-            section="Analysis",
+            caption="Power spectrum: Total, Evoked, Induced"
         )
 
         # power_total.plot_topo(show=False)

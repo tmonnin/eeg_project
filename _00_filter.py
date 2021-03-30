@@ -9,12 +9,12 @@ class Filter(Base):
 # https://mne.tools/0.15/auto_tutorials/plot_artifacts_correction_filtering.html
     def __init__(self):
         prev = None
-        super().__init__(self.__class__.__name__.lower(), prev)
+        super().__init__(self.__class__.__name__.lower(), prev, section=("Preprocessing", "Filter"))
 
     def process(self):
         # Plot fourier space
         fourier_pre_filter = self.raw.plot_psd(area_mode='range', tmax=10.0, average=True,xscale="log", show=False)
-        self.add_figure(figure=fourier_pre_filter, caption="Frequency diagram before filtering", section="Preprocessing")
+        self.add_figure(figure=fourier_pre_filter, caption="Frequency diagram before filtering")
         self.raw.filter(self.config["fmin"], self.config["fmax"], fir_design='firwin')
         #FIR filter parameters
             #---------------------
@@ -29,7 +29,7 @@ class Filter(Base):
             #
             #Effective window size : 2.000 (s)
         fourier_post_filter = self.raw.plot_psd(area_mode='range', tmax=10.0, average=True,xscale="log", show=False)
-        self.add_figure(figure=fourier_post_filter, caption="Frequency diagram after filtering", section="Preprocessing")
+        self.add_figure(figure=fourier_post_filter, caption="Frequency diagram after filtering")
 
 
 if __name__ == '__main__':

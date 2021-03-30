@@ -8,7 +8,7 @@ class ErpPeakExtraction(Base):
 
     def __init__(self):
         prev = Reference()
-        super().__init__(self.__class__.__name__.lower(), prev)
+        super().__init__(self.__class__.__name__.lower(), prev, section=("Pre-Analysis", "ERP Peak Extraction"))
 
     def process(self):
         electrode = self.config["electrode"]
@@ -31,11 +31,11 @@ class ErpPeakExtraction(Base):
         figure_difference = difference.plot_joint(times=[0.15], title='Face - Car', show=False)
 
         evt_plot = mne.viz.plot_events(self.evts, event_id=evts_dict_categorized, show=False)
-        self.add_figure(figure=evt_plot, caption="Overview of events", section="Analyse")
-        self.add_figure(figure=figure_difference, caption="Difference of conditions", section="Analyse")
-        self.add_figure(figure=figure_compare_evokeds, caption="Comparison of evokeds", section="Analyse")
-        self.add_figure(figure=figure_face, caption="Face condition", section="Analyse")
-        self.add_figure(figure=figure_car, caption="Car condition", section="Analyse")
+        self.add_figure(figure=evt_plot, caption="Overview of events")
+        self.add_figure(figure=figure_difference, caption="Difference of conditions")
+        self.add_figure(figure=figure_compare_evokeds, caption="Comparison of evokeds")
+        self.add_figure(figure=figure_face, caption="Face condition")
+        self.add_figure(figure=figure_car, caption="Car condition")
 
         epochs.save(fname.epochs(subject=self.subject), overwrite=True)
 

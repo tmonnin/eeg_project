@@ -7,12 +7,12 @@ class ICA(Base):
 
     def __init__(self):
         prev = CleanSegments()
-        super().__init__(self.__class__.__name__.lower(), prev)
+        super().__init__(self.__class__.__name__.lower(), prev, section=("Preprocessing", "ICA"))
 
     def process(self):
         # TODO compare pre and post removing bad components with ICA
         figure_pre_ica = self.raw.plot(show=False)
-        #self.add_figure(figure=figure_pre_ica, caption="Before applying ICA", section="Preprocessing")
+        #self.add_figure(figure=figure_pre_ica, caption="Before applying ICA")
         raw_pre_ica = self.raw.copy()
         raw_ica = self.raw.copy()
         raw_ica.load_data()
@@ -53,10 +53,10 @@ class ICA(Base):
         self.raw = ica.apply(self.raw, exclude=bad_comps)
 
         figure_post_ica = self.raw.plot(show=False)
-        #self.add_figure(figure=figure_post_ica, caption="After applying ICA", section="Preprocessing")
-
+        #self.add_figure(figure=figure_post_ica, caption="After applying ICA")
+        raw_pre_ica.load_data()
         figure_ica_overlay = ica.plot_overlay(raw_pre_ica, exclude=bad_comps, show=False)
-        self.add_figure(figure=figure_ica_overlay, caption="ICA Overlay", section="Preprocessing")
+        self.add_figure(figure=figure_ica_overlay, caption="ICA Overlay")
 
 
 if __name__ == '__main__':

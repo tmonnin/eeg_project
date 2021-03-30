@@ -10,22 +10,22 @@ class CleanSegments(Base):
 
     def __init__(self):
         prev = CleanChannels()
-        super().__init__(self.__class__.__name__.lower(), prev)
+        super().__init__(self.__class__.__name__.lower(), prev, section=("Preprocessing", "Clean Segments"))
 
     def process(self):
         # TODO Add to report: Epoching does baseline correction
         epochs_none = self.get_epochs_none()
         epochs_manual = self.get_epochs_manual()
         epochs_thresh = self.get_epochs_thresh()
-        #epochs_ar = self.get_epochs_autoreject()
+        epochs_ar = self.get_epochs_autoreject()
         # Compare different rejection techniques
         figure_compare_evoked = mne.viz.plot_compare_evokeds({
             'raw': epochs_none.average(),
             'manual': epochs_manual.average(),
             'thresh': epochs_thresh.average(),
-            #'ar': epochs_ar.average()
+            'ar': epochs_ar.average()
             }, picks="Cz", show=False)
-        self.add_figure(figure=figure_compare_evoked, caption="Diagram of different approaches for cleaning segments", section="Preprocessing")
+        self.add_figure(figure=figure_compare_evoked, caption="Diagram of different approaches for cleaning segments")
 
     def get_epochs_none(self):
         epochs = mne.Epochs(self.raw,self.evts,self.evts_dict_stim,tmin=-0.1,tmax=1,reject_by_annotation=False)
