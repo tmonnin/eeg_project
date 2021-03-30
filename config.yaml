@@ -37,6 +37,7 @@ cleansegments:
   strategy: "manual"
   #strategy: "thresh"
   #strategy: "autoreject"
+  electrode: "PO8"
 
 ica:
   fmin: 2.0  # lowpass min frequency in Hz

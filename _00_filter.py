@@ -14,7 +14,7 @@ class Filter(Base):
     def process(self):
         # Plot fourier space
         fourier_pre_filter = self.raw.plot_psd(area_mode='range', tmax=10.0, average=True,xscale="log", show=False)
-        self.add_figure(figure=fourier_pre_filter, caption="Frequency diagram before filtering")
+        self.add_figure(figure=fourier_pre_filter, caption="Power spectral density diagram before filtering")
         self.raw.filter(self.config["fmin"], self.config["fmax"], fir_design='firwin')
         #FIR filter parameters
             #---------------------
@@ -28,8 +28,8 @@ class Filter(Base):
             #- Filter length: 6759 samples (6.601 sec)
             #
             #Effective window size : 2.000 (s)
-        fourier_post_filter = self.raw.plot_psd(area_mode='range', tmax=10.0, average=True,xscale="log", show=False)
-        self.add_figure(figure=fourier_post_filter, caption="Frequency diagram after filtering")
+        fourier_post_filter = self.raw.plot_psd(area_mode='range', tmax=10.0, average=True, xscale="log", show=False)
+        self.add_figure(figure=fourier_post_filter, caption="Power spectral density diagram after filtering")
 
 
 if __name__ == '__main__':

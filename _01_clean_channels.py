@@ -35,13 +35,13 @@ class CleanChannels(Base):
         #picks = mne.pick_channels_regexp(raw.ch_names, regexp='MEG 2..3')
 
         # compare raw eeg and eeg without bad channels
-        all_eeg = mne.pick_types(self.raw.info, meg=False, eeg=True, exclude=[])
-        figure_all_channels = self.raw.plot(order=all_eeg, n_channels=len(all_eeg), show=False)
-        self.add_figure(figure=figure_all_channels, caption="Diagram with all channels")
+        all_eeg = mne.pick_types(self.raw.info, meg=False, eeg=True, eog=False, exclude=[])
+        figure_all_channels = self.raw.plot(start=105, duration=2, butterfly=True, bad_color='r', order=all_eeg, n_channels=len(all_eeg), show=False)
+        self.add_figure(figure=figure_all_channels, caption="Diagram with all channels (bad are red)")
 
-        good_eeg = mne.pick_types(self.raw.info, meg=False, eeg=True)#, exclude='bads')
-        figure_good_channels = self.raw.plot(order=good_eeg, n_channels=len(good_eeg), show=False)
-        self.add_figure(figure=figure_good_channels, caption="Diagram with good channels")
+        good_eeg = mne.pick_types(self.raw.info, meg=False, eeg=True, eog=False, exclude='bads')
+        figure_good_channels = self.raw.plot(start=105, duration=2, butterfly=True, order=good_eeg, n_channels=len(good_eeg), show=False)
+        self.add_figure(figure=figure_good_channels, caption="Diagram with good channels (bad are grayed out)")
 
         #print(np.setdiff1d(all_eeg, good_eeg))
         #print(np.array(raw.ch_names)[np.setdiff1d(all_eeg, good_eeg)])
@@ -51,7 +51,8 @@ class CleanChannels(Base):
         self.raw.load_data()  # required for interpolation command
         self.raw.interpolate_bads()
 
-        figure_interpolated_bads = self.raw.plot(n_channels=len(self.raw.ch_names), show=False)#,scalings =40e-6)
+        post_eeg = mne.pick_types(self.raw.info, meg=False, eeg=True, eog=False)
+        figure_interpolated_bads = self.raw.plot(start=105, duration=2, butterfly=True, order=post_eeg, bad_color='r', n_channels=len(self.raw.ch_names), show=False)
         self.add_figure(figure=figure_interpolated_bads, caption="Diagram after interpolating bad channels")
 
 
