@@ -34,6 +34,7 @@ class TimeFrequencyAnalysis(Base):
             power_difference_induced_lst.append(power_difference_induced[0])
             power_difference_induced_data.append(power_difference_induced[0].data[0])
 
+        # Topo not very helpful since pre-analysis step only exports electrode PO8 
         power_difference_total_avg = mne.combine_evoked(power_difference_total_lst, weights="equal")
         power_difference_evoked_avg = mne.combine_evoked(power_difference_evoked_lst, weights="equal")
         power_difference_induced_avg = mne.combine_evoked(power_difference_induced_lst, weights="equal")
@@ -83,6 +84,13 @@ class TimeFrequencyAnalysis(Base):
             caption="Average power spectrum",
         )
 
+        figure_topo_total = power_difference_total_avg.plot_topo(baseline=None, mode="logratio", title="Topo plot of total difference of power spectrum", show=False)
+        self.add_figure(figure=figure_topo_total, caption="Topo plot of total difference of power spectrum")
+        figure_topo_evoked = power_difference_evoked_avg.plot_topo(baseline=None, mode='logratio', title="Topo plot of evoked difference of power spectrum", show=False)
+        self.add_figure(figure=figure_topo_evoked, caption="Topo plot of evoked difference of power spectrum")
+        figure_topo_induced = power_difference_induced_avg.plot_topo(baseline=None, mode='logratio', title="Topo plot of induced difference of power spectrum", show=False)
+        self.add_figure(figure=figure_topo_induced, caption="Topo plot of induced difference of power spectrum")
+
         power_difference_total_data = np.array(power_difference_total_data)
         power_difference_evoked_data = np.array(power_difference_evoked_data)
         power_difference_induced_data = np.array(power_difference_induced_data)
@@ -117,7 +125,7 @@ class TimeFrequencyAnalysis(Base):
 
         self.add_figure(
             figure_significance_test,
-            caption=f"Significance of averaged power spectrum difference, alpha={alpha}",
+            caption=f"Significance of averaged power spectrum difference, alpha={alpha}, threshold={threshold}",
         )
 
         self.report(analysis=True)

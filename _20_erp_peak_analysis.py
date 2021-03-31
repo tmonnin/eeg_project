@@ -57,6 +57,8 @@ class ErpPeakAnalysis(Base):
 
         figure_grand_avg_difference = mne.viz.plot_compare_evokeds(average, picks=electrode, show=False)
         self.add_figure(figure_grand_avg_difference, caption="Grand average of evokeds for conditions 'faces' and 'cars'")
+        figure_topomap = evoked_difference.plot_topomap(np.arange(0, 0.3, 0.025), ch_type='eeg', time_unit='s', ncols=6, nrows='auto', show=False)
+        self.add_figure(figure_topomap, caption="Topomap for difference wave")
 
         # Analyse correlation between peaks and time
         data = np.array(peak_lst)
