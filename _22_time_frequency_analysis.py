@@ -35,9 +35,9 @@ class TimeFrequencyAnalysis(Base):
             power_difference_induced_data.append(power_difference_induced[0].data[0])
 
         # Topo not very helpful since pre-analysis step only exports electrode PO8 
-        power_difference_total_avg = mne.combine_evoked(power_difference_total_lst, weights="equal")
-        power_difference_evoked_avg = mne.combine_evoked(power_difference_evoked_lst, weights="equal")
-        power_difference_induced_avg = mne.combine_evoked(power_difference_induced_lst, weights="equal")
+        #power_difference_total_avg = mne.combine_evoked(power_difference_total_lst, weights="equal")
+        #power_difference_evoked_avg = mne.combine_evoked(power_difference_evoked_lst, weights="equal")
+        #power_difference_induced_avg = mne.combine_evoked(power_difference_induced_lst, weights="equal")
 
         figure_power_spectrum_avg, (ax1, ax2, ax3) = plt.subplots(1, 3, constrained_layout=True, figsize=(14, 4))
         mode = "mean"
