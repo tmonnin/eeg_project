@@ -34,10 +34,9 @@ class TimeFrequencyAnalysis(Base):
             power_difference_induced_lst.append(power_difference_induced[0])
             power_difference_induced_data.append(power_difference_induced[0].data[0])
 
-        # Topo not very helpful since pre-analysis step only exports electrode PO8 
-        #power_difference_total_avg = mne.combine_evoked(power_difference_total_lst, weights="equal")
-        #power_difference_evoked_avg = mne.combine_evoked(power_difference_evoked_lst, weights="equal")
-        #power_difference_induced_avg = mne.combine_evoked(power_difference_induced_lst, weights="equal")
+        power_difference_total_avg = mne.combine_evoked(power_difference_total_lst, weights="equal")
+        power_difference_evoked_avg = mne.combine_evoked(power_difference_evoked_lst, weights="equal")
+        power_difference_induced_avg = mne.combine_evoked(power_difference_induced_lst, weights="equal")
 
         figure_power_spectrum_avg, (ax1, ax2, ax3) = plt.subplots(1, 3, constrained_layout=True, figsize=(14, 4))
         mode = "mean"
@@ -91,9 +90,10 @@ class TimeFrequencyAnalysis(Base):
         figure_topo_induced = power_difference_induced_avg.plot_topo(baseline=None, mode='logratio', title="Topo plot of induced difference of power spectrum", show=False)
         self.add_figure(figure=figure_topo_induced, caption="Topo plot of induced difference of power spectrum")
 
-        power_difference_total_data = np.array(power_difference_total_data)
-        power_difference_evoked_data = np.array(power_difference_evoked_data)
-        power_difference_induced_data = np.array(power_difference_induced_data)
+        # Topo not very helpful since pre-analysis step only exports electrode PO8
+        #power_difference_total_data = np.array(power_difference_total_data)
+        #power_difference_evoked_data = np.array(power_difference_evoked_data)
+        #power_difference_induced_data = np.array(power_difference_induced_data)
 
         # Significance testing
         alpha = self.config["alpha"]
