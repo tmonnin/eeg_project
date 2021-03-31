@@ -83,17 +83,17 @@ class TimeFrequencyAnalysis(Base):
             caption="Average power spectrum",
         )
 
-        figure_topo_total = power_difference_total_avg.plot_topo(baseline=None, mode="logratio", title="Topo plot of total difference of power spectrum", show=False)
-        self.add_figure(figure=figure_topo_total, caption="Topo plot of total difference of power spectrum")
-        figure_topo_evoked = power_difference_evoked_avg.plot_topo(baseline=None, mode='logratio', title="Topo plot of evoked difference of power spectrum", show=False)
-        self.add_figure(figure=figure_topo_evoked, caption="Topo plot of evoked difference of power spectrum")
-        figure_topo_induced = power_difference_induced_avg.plot_topo(baseline=None, mode='logratio', title="Topo plot of induced difference of power spectrum", show=False)
-        self.add_figure(figure=figure_topo_induced, caption="Topo plot of induced difference of power spectrum")
-
         # Topo not very helpful since pre-analysis step only exports electrode PO8
-        #power_difference_total_data = np.array(power_difference_total_data)
-        #power_difference_evoked_data = np.array(power_difference_evoked_data)
-        #power_difference_induced_data = np.array(power_difference_induced_data)
+        #figure_topo_total = power_difference_total_avg.plot_topo(baseline=None, mode="logratio", title="Topo plot of total difference of power spectrum", show=False)
+        #self.add_figure(figure=figure_topo_total, caption="Topo plot of total difference of power spectrum")
+        #figure_topo_evoked = power_difference_evoked_avg.plot_topo(baseline=None, mode='logratio', title="Topo plot of evoked difference of power spectrum", show=False)
+        #self.add_figure(figure=figure_topo_evoked, caption="Topo plot of evoked difference of power spectrum")
+        #figure_topo_induced = power_difference_induced_avg.plot_topo(baseline=None, mode='logratio', title="Topo plot of induced difference of power spectrum", show=False)
+        #self.add_figure(figure=figure_topo_induced, caption="Topo plot of induced difference of power spectrum")
+
+        power_difference_total_data = np.array(power_difference_total_data)
+        power_difference_evoked_data = np.array(power_difference_evoked_data)
+        power_difference_induced_data = np.array(power_difference_induced_data)
 
         # Significance testing
         alpha = self.config["alpha"]
