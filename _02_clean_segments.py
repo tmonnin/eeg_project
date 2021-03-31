@@ -1,5 +1,6 @@
 import os
 import mne
+import matplotlib.pyplot as plt
 from autoreject import AutoReject
 from config import fname
 from base import Base
@@ -13,7 +14,7 @@ class CleanSegments(Base):
         super().__init__(self.__class__.__name__.lower(), prev, section=("Preprocessing", "Clean Segments"))
 
     def process(self):
-        # TODO Add to report: Epoching does baseline correction
+        # Epoching does baseline correction
         epochs_none = self.get_epochs_none()
         epochs_manual = self.get_epochs_manual()
         epochs_thresh = self.get_epochs_thresh()
@@ -38,13 +39,13 @@ class CleanSegments(Base):
     def get_epochs_manual(self):
         if self.subject in self.config["subjects_preprocess"]:
             # Subject is one of the three ones that are cleaned manually
-            path_annotations = os.path.join(fname.annotations_dir, f"sub-{self.subject}_task-{self.task}_badannotations_.txt")
+            path_annotations = os.path.join(fname.annotations_dir, f"sub-{self.subject}_task-{self.task}_badannotations.txt")
             select_bad_interactive = False
             if select_bad_interactive:
                 # Open interactive tool to select bad segments
-                self.raw.plot(n_channels=len(self.raw.ch_names), show=True)#,scalings =40e-6)
-                #plt.show()
-                bad_ix = [i for i,a in enumerate(self.raw.annotations) if a['description']=="BAD_"]
+                self.raw.plot(n_channels=len(self.raw.ch_names), show=True)
+                plt.show()
+                bad_ix = [i for i,a in enumerate(self.raw.annotations) if a['description'].startswith("BAD_")]
                 self.raw.annotations[bad_ix].save(path_annotations)
             #https://mne.tools/dev/generated/mne.read_annotations.html
             #The annotations stored in a .csv require the onset columns to be timestamps. If you have onsets as floats (in seconds), you should use the .txt extension.
