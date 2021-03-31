@@ -35,8 +35,8 @@ class ErpPeakAnalysis(Base):
             evoked_cars_lst.append(evoked_cars)
             evoked_difference = mne.combine_evoked([evoked_faces, evoked_cars], weights=[1, -1])
             #mne.viz.plot_compare_evokeds({"faces": evoked_faces, "cars": evoked_cars, "difference": evoked_difference}, picks=electrode, show=True)
-            # Crop to relevant time frame between 150ms and 200ms as proposed in Rossion 2008
-            evoked_difference_cropped = evoked_difference.crop(tmin=0.13, tmax=0.2)
+            # Crop to relevant time frame between 130ms and 200ms as proposed in Rossion 2008
+            evoked_difference_cropped = evoked_difference.crop(tmin=self.config["crop_tmin"], tmax=self.config["crop_tmax"])
             # Potential extension: use peak finder: https://mne.tools/dev/generated/mne.preprocessing.peak_finder.html
             # Extract peak amplitude on electrode PO8 with mne function
             # https://mne.tools/stable/generated/mne.EvokedArray.html#mne.EvokedArray.get_peak
@@ -71,7 +71,7 @@ class ErpPeakAnalysis(Base):
         ### Non-parametric paired t-test
         alpha = self.config["alpha"]
         # Unwinsorized data
-        t_values, p_value = scipy.stats.ttest_1samp(data, 0.0, alternative="less")
+        t_values, p_value = scipy.stats.ttest_1samp(data, 0.0, alternative="two-sided")
         # Evaluate distribution
         figure_histogram, (ax1, ax2) = plt.subplots(1, 2, constrained_layout=True, figsize=(12, 5))
         _, bins, _ = ax1.hist(np.stack([data*1e6, np.zeros_like(data)]).T, bins=10, label=("ERP peaks of difference wave", "H0"))
@@ -88,7 +88,7 @@ class ErpPeakAnalysis(Base):
         winsorized_lims = self.config["winsorized_lims"]
         data = scipy.stats.mstats.winsorize(data, limits=[winsorized_lims, winsorized_lims])
         time = scipy.stats.mstats.winsorize(time, limits=[winsorized_lims, winsorized_lims])
-        t_values, p_value = scipy.stats.ttest_1samp(data, 0.0, alternative="less")
+        t_values, p_value = scipy.stats.ttest_1samp(data, 0.0, alternative="two-sided")
         # Evaluate distribution
         ax2.hist(np.stack([data*1e6, np.zeros_like(data)]).T, bins=bins, label=("Winsorized ERP peaks of difference wave", "H0"))
         ax2.axvline(x=np.mean(data)*1e6, color="lightcoral", linestyle='--', label=f"Winsorized mean={np.mean(data)*1e6:.2f}"+r"$\mu V$"+f"\n(winsorized limits={winsorized_lims})")

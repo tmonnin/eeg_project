@@ -75,7 +75,9 @@ class TimeFrequencyAnalysis(Base):
             show=False,
         )
         figure_power_spectrum_avg.suptitle(f"Difference at {self.config['electrode']}")
-
+        # Copy and reshape tick labels for usage in significance plots
+        tick_labels = ax1.get_yticks().astype(int).tolist()
+        del tick_labels[3::4]
         self.add_figure(
             figure=figure_power_spectrum_avg,
             caption="Average power spectrum",
@@ -98,16 +100,19 @@ class TimeFrequencyAnalysis(Base):
         ax1.imshow(cluster_array_total, cmap="gray", origin="lower", aspect="auto", extent=extent)
         ax1.set_xlabel("Time [s]")
         ax1.set_ylabel("Frequency [Hz]")
+        ax1.set_yticklabels(tick_labels)
         ax1.set_title(f"Significant power areas for total effect (white)")
 
         ax2.imshow(cluster_array_evoked, cmap="gray", origin="lower", aspect="auto", extent=extent)
         ax2.set_xlabel("Time [s]")
         ax2.set_ylabel("Frequency [Hz]")
+        ax2.set_yticklabels(tick_labels)
         ax2.set_title(f"Significant power areas for evoked effect (white)")
 
         ax3.imshow(cluster_array_induced, cmap="gray", origin="lower", aspect="auto", extent=extent)
         ax3.set_xlabel("Time [s]")
         ax3.set_ylabel("Frequency [Hz]")
+        ax3.set_yticklabels(tick_labels)
         ax3.set_title(f"Significant power areas for induced effect (white)")
 
         self.add_figure(

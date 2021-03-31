@@ -20,6 +20,9 @@ subjects: ["002","003","004","005","006","007","008","009","010","011","012","01
 
 subjects_preprocess: [] #"001","002","003"]
 
+epoch_tmin: -0.1  # s
+epoch_tmax: 1.0  # s
+
 ##################
 # Step-specific params
 ##################
@@ -33,10 +36,11 @@ cleanchannels:
   bad_channels: []
 
 cleansegments:
-  #strategy: "none"
-  strategy: "manual"
-  #strategy: "thresh"
-  #strategy: "autoreject"
+  strategy:
+    - "none"
+    - "manual"
+    - "thresh"
+    - "autoreject"
   electrode: "PO8"
 
 ica:
@@ -57,13 +61,22 @@ timefrequencyextraction:
 
 erppeakanalysis:
   electrode: "PO8"
+  crop_tmin: 0.13  # s
+  crop_tmax: 0.2  # s
   alpha: 0.05
   winsorized_lims: 0.25
 
 decodinganalysis:
-  t_start: 0.0
-  t_end: 1.0
-  t_sampling: 0.02
+  scoring_strategy:
+    - "StandardScaler-LDA"
+    - "StandardScaler-LogisticRegression"
+    - "StandardScaler-SVM"
+    - "Vectorizer-LDA"
+    - "Vectorizer-LogisticRegression"
+    - "Vectorizer-SVM"
+  t_start: 0.0  # s
+  t_end: 1.0  # s
+  t_sampling: 0.02  # s
   alpha: 0.025
 
 timefrequencyanalysis:
