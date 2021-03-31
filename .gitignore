@@ -1,8 +1,6 @@
 # Project specific
-reports/
+reports/*.h5
 subjects/
-annotations/
-results/
 ~*.*
 
 # Byte-compiled / optimized / DLL files
